@@ -21,15 +21,11 @@ Nothing here needs to be pasted into chat. The one value that matters (the Fireb
 2. **New repository secret** → Name: `VITE_FIREBASE_CONFIG` → Secret: paste the block you copied (the whole `const firebaseConfig = {...};` is fine, or just the `{...}` part) → **Add secret**.
 3. Tell me "Firebase secret added" — I'll trigger a rebuild. (The site reads it during the build; it never appears in this chat or a terminal. This config is the kind of key that ships inside the website anyway; the Firestore rules you published are what protect the data.)
 
-## C. DNS for your subdomain (5 min)
+## C. DNS for your subdomain — `h2c.zanesorenson.com`
 
-1. Decide the hostname, e.g. `h2c.yourdomain.com` (tell me which).
-2. At your domain's DNS provider, add a record:
-   - Type: **CNAME**
-   - Name/Host: **h2c** (just the subdomain part)
-   - Value/Target: **zsoren.github.io** (some providers want a trailing dot: `zsoren.github.io.`)
-   - TTL: default.
-3. Tell me the hostname once it's added. I'll then switch GitHub Pages to it and wait for the HTTPS certificate (usually minutes, can be up to an hour). **Until I do that step, keep using https://zsoren.github.io/h2c-tracker-c0cd/** — it works today.
+1. ✅ CNAME `h2c` → `zsoren.github.io` is added (Aug 25).
+2. **One more click (Cloudflare):** open the DNS page for zanesorenson.com in Cloudflare, find the `h2c` record, and click the **orange cloud** so it turns **grey ("DNS only")**. With the orange proxy on, GitHub can't verify the domain or issue the HTTPS certificate.
+3. Nothing else to do — I'm watching DNS. The moment it shows GitHub's addresses I switch GitHub Pages to `h2c.zanesorenson.com`, rebuild, and turn on HTTPS once the certificate is issued (minutes to an hour). Until then **https://zsoren.github.io/h2c-tracker-c0cd/** keeps working; afterwards it redirects to the new address automatically.
 
 ## D. Phone check (5 min) — can be done right now with the github.io link
 
