@@ -78,7 +78,7 @@ export function startSupabase(cfg: Cfg) {
       const { data, error } = await q
       if (error) throw error
       const rows = (data ?? []) as Row[]
-      const fresh = store.merge(rows.map(toEvent))
+      const fresh = store.merge(rows.map(toEvent), true)
       for (const r of rows) synced.add(r.id)
       saveSynced()
       const maxIns = rows.reduce((m, r) => (r.inserted_at && r.inserted_at > m ? r.inserted_at : m), cursor ?? '')
@@ -97,7 +97,7 @@ export function startSupabase(cfg: Cfg) {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'events', filter: `team_id=eq.${cfg.team}` }, payload => {
         const r = payload.new as Row
         synced.add(r.id); saveSynced()
-        const fresh = store.merge([toEvent(r)])
+        const fresh = store.merge([toEvent(r)], true)
         if (r.inserted_at && (!cursor || r.inserted_at > cursor)) { cursor = r.inserted_at; saveJSON(CURSOR_KEY, cursor) }
         if (fresh) log('live +1'); status({ lastSynced: Date.now() })
       })

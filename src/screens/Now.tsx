@@ -134,6 +134,7 @@ export function Now({ snap }: { snap: Snapshot }) {
               : `Leg ${conflict.leg} also logged ${fmtClock(conflict.loser.payload.at as number)} on another phone · tap`}
           </div>
         )}
+        {snap.flags.notice && snap.flags.notice.until > Date.now() && <div className="remline warn rem1">↓ {snap.flags.notice.text}</div>}
         {rems.map((r, i) => <div key={r.key} className={'remline rem' + (i + (conflict ? 2 : 1)) + (r.key === 'novan' ? ' warn' : '')}>{r.text}</div>)}
       </div>
       {conflict && conflictOpen && (
