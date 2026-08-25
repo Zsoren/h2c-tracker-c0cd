@@ -10,6 +10,7 @@ Plan: `C:\Users\Zane\.claude\plans\i-am-running-hood-synthetic-scroll.md` (counc
 - LOG HANDOFF sheet: leg chips, "Who just finished?" when stale, any time, chips, skipped-leg estimates + plausibility, same-runner-continues, restating CONFIRM, 10-s UNDO, re-log warning.
 - Expected-time sheet (ETA chips / duration; effect line), change-runner sheet (back-to-back warning), driver picker, conflict note with "use X instead".
 - Offline: service worker precaches everything; verified with a headless "airplane mode" test (loads offline, logs persist across relaunch). "Ready offline" chip, iOS install banner, first-run "Which runner are you?".
+- Contrast: axe audit (AA + AAA rules) passes on NOW, handoff sheet, Schedule, Leg detail, Runners, Info. Live-site smoke test passes (SW scope, manifest, offline reload).
 - Sync: Supabase transport written (append-only upsert, server-time cursor, realtime, re-fetch on foreground/online); dev transport verified between two tabs. Activates when the three repo variables exist.
 
 ## Tuesday

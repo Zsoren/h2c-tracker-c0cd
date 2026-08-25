@@ -101,14 +101,15 @@ h1, h2, h3 { margin: 0; font-weight: 800; }
 .list { display: flex; flex-direction: column; gap: 8px; }
 .item { background: var(--card); border-radius: 12px; padding: 10px 12px; display: grid; grid-template-columns: 44px 1fr auto; gap: 8px; align-items: center; min-height: 56px; text-align: left; border: 0; width: 100%; }
 .item.current { outline: 2px solid var(--amber); }
-.item.done { opacity: .55; }
+.item.done { background: transparent; border: 1px solid var(--line); }
+.item.done .n, .item.done .t { color: var(--fg2); }
 .item .n { font-size: 20px; font-weight: 900; }
 .item .t { font-size: 16px; }
 .item .s { font-size: 13px; color: var(--fg2); }
 .item .r { text-align: right; font-size: 15px; }
 .badge { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .04em; padding: 1px 6px; border-radius: 6px; background: var(--card2); color: var(--fg); margin-right: 4px; }
 .badge.gear { background: #2b2b2b; }
-.badge.night { background: #3a2d00; color: var(--amber); }
+.badge.night { background: #2b2200; color: var(--amber); }
 .dotk { display: inline-block; width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--fg2); vertical-align: middle; margin-right: 4px; }
 .dotk.actual { background: var(--fg); border-color: var(--fg); }
 .dotk.est { border-style: dashed; }
