@@ -15,6 +15,8 @@ export interface Settings {
   iAmPrompted: boolean
   bannerDismissed: boolean
   timeOffsetMs: number
+  /** ids of conflict-loser events the user chose to keep dismissed */
+  dismissedAlts: string[]
 }
 
 export type SyncMode = 'off' | 'on'
@@ -58,7 +60,7 @@ class RaceStore {
 
   constructor() {
     this.events = loadJSON<H2CEvent[]>(EVENTS_KEY, [])
-    const def: Settings = { deviceId: newId(), iAmRunnerId: null, isCaptain: false, iAmPrompted: false, bannerDismissed: false, timeOffsetMs: 0 }
+    const def: Settings = { deviceId: newId(), iAmRunnerId: null, isCaptain: false, iAmPrompted: false, bannerDismissed: false, timeOffsetMs: 0, dismissedAlts: [] }
     this.settings = { ...def, ...loadJSON<Partial<Settings>>(SETTINGS_KEY, {}) }
     saveJSON(SETTINGS_KEY, this.settings)
     this.recompute()

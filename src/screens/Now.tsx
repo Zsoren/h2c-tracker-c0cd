@@ -36,7 +36,13 @@ export function Now({ snap }: { snap: Snapshot }) {
   const me = settings.iAmRunnerId
   const myNext = me ? proj.legs.find(l => l.runnerId === me && l.n >= Math.max(1, n)) ?? null : null
   const iJust = showIJustFinished(proj, state, me)
-  const rems = reminders(LEGS, proj, now).slice(0, 2)
+  // conflict notes: a handoff another phone logged differently while offline (persistent until dismissed)
+  const conflict = Object.entries(state.alternates)
+    .filter(([k]) => k.startsWith('handoff:'))
+    .flatMap(([k, alts]) => alts.map(a => ({ leg: +k.split(':')[1], loser: a.event, winner: a.winner })))
+    .find(c => !settings.dismissedAlts.includes(c.loser.id)) ?? null
+  const [conflictOpen, setConflictOpen] = useState(false)
+  const rems = reminders(LEGS, proj, now).slice(0, conflict ? 1 : 2)
   const driver = lp ? (state.drivers[n] ?? defaultDriver(TEAM, state, n)) : null
   const late = lp && typeof lp.leaveBy === 'number' && now > lp.leaveBy
   const openSheet = (preset: number | null = null) => setSheet({ at: store.now(), preset })
@@ -121,8 +127,23 @@ export function Now({ snap }: { snap: Snapshot }) {
 
       {/* 8. Reminders */}
       <div className="rem">
-        {rems.map((r, i) => <div key={r.key} className={'remline rem' + (i + 1) + (r.key === 'novan' ? ' warn' : '')}>{r.text}</div>)}
+        {conflict && (
+          <div className="remline warn rem1" onClick={() => setConflictOpen(true)}>
+            {conflict.loser.deviceId === settings.deviceId
+              ? `Leg ${conflict.leg} set to ${fmtClock(conflict.winner.payload.at as number)} by ${conflict.winner.role === 'captain' ? "captain's" : 'another'} phone (yours: ${fmtClock(conflict.loser.payload.at as number)}) · tap`
+              : `Leg ${conflict.leg} also logged ${fmtClock(conflict.loser.payload.at as number)} on another phone · tap`}
+          </div>
+        )}
+        {rems.map((r, i) => <div key={r.key} className={'remline rem' + (i + (conflict ? 2 : 1)) + (r.key === 'novan' ? ' warn' : '')}>{r.text}</div>)}
       </div>
+      {conflict && conflictOpen && (
+        <Sheet open onClose={() => setConflictOpen(false)}>
+          <h2 style={{ fontSize: 24 }}>Leg {conflict.leg} handoff — two times</h2>
+          <div className="names">Kept <b>{fmtClock(conflict.winner.payload.at as number)}</b> ({conflict.winner.role === 'captain' ? "captain's phone" : conflict.winner.deviceId === settings.deviceId ? 'this phone' : 'another phone'}) · other: <b>{fmtClock(conflict.loser.payload.at as number)}</b> ({conflict.loser.deviceId === settings.deviceId ? 'this phone' : 'another phone'})</div>
+          <button className="confirm" onClick={() => { store.dispatch('handoff_logged', { leg: conflict.leg, at: conflict.loser.payload.at }); store.setSettings({ dismissedAlts: [...settings.dismissedAlts, conflict.loser.id] }); setConflictOpen(false) }}>Use {fmtClock(conflict.loser.payload.at as number)} instead</button>
+          <button className="cancel" onClick={() => { store.setSettings({ dismissedAlts: [...settings.dismissedAlts, conflict.loser.id] }); setConflictOpen(false) }}>Keep {fmtClock(conflict.winner.payload.at as number)}</button>
+        </Sheet>
+      )}
 
       {/* 9. Button / toast */}
       {toast ? (
