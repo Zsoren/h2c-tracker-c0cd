@@ -114,6 +114,7 @@ EMERGENCY: 911 first, then race HQ (number on your team packet / handbook).`}
             <span className="muted">{Math.round(settings.timeOffsetMs / 60000)} min</span>
           </span>
           <span className="k">build</span><span>{import.meta.env.MODE} · {import.meta.env.BASE_URL}</span>
+          <span className="k">sync log</span><span className="pre tiny">{(((window as unknown as { __h2cSyncLog?: string[] }).__h2cSyncLog) ?? ['(none)']).slice(-8).join('\n')}</span>
         </div>
       )}
     </div>
