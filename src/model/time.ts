@@ -74,7 +74,8 @@ export function parseHMS(s: string): number {
 
 /** seconds per mile → "10:00" */
 export function fmtPace(paceSec: number): string {
-  const m = Math.floor(paceSec / 60), s = Math.round(paceSec % 60)
+  const total = Math.round(paceSec)
+  const m = Math.floor(total / 60), s = total % 60
   return `${m}:${String(s).padStart(2, '0')}`
 }
 
