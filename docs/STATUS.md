@@ -11,11 +11,11 @@ Plan: `C:\Users\Zane\.claude\plans\i-am-running-hood-synthetic-scroll.md` (counc
 - Expected-time sheet (ETA chips / duration; effect line), change-runner sheet (back-to-back warning), driver picker, conflict note with "use X instead".
 - Offline: service worker precaches everything; verified with a headless "airplane mode" test (loads offline, logs persist across relaunch). "Ready offline" chip, iOS install banner, first-run "Which runner are you?".
 - Contrast: axe audit (AA + AAA rules) passes on NOW, handoff sheet, Schedule, Leg detail, Runners, Info. Live-site smoke test passes (SW scope, manifest, offline reload).
-- Sync: Supabase transport written (append-only upsert, server-time cursor, realtime, re-fetch on foreground/online); dev transport verified between two tabs. Activates when the three repo variables exist.
+- Sync: Firestore transport (Tue Aug 25 — Supabase project limit hit, switched to the council-approved Firestore design): append-only rules, memory cache only, serverTs cursor, snapshot listener, re-subscribe on foreground/online; dev transport verified between two tabs. Activates when `VITE_TEAM_ID` (variable) and `VITE_FIREBASE_CONFIG` (secret) exist.
 
 ## Tuesday
-- Zane: `docs/ZANE-TUESDAY.md` (Supabase project + SQL + keys; phone check; 3-pin spot check; "Kevin?" question).
-- Me: set `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` repo variables → redeploy → real two-phone sync test; incoming-change toast; contrast audit; README; polish from Zane's screenshot.
+- Zane: `docs/ZANE-SETUP.md` (Firebase project + rules; add config as a GitHub secret himself; DNS CNAME; phone check; 3-pin spot check). Kevin confirmed.
+- Me: once the secret exists → rebuild → real two-phone sync test; once DNS is added → custom domain on Pages, BASE_PATH=/, HTTPS; polish from Zane's screenshot.
 
 ## Wednesday evening
 - Airplane-mode + two-phone sync test with Zane (incl. deliberate conflict with captain on). Go/no-go on sync.

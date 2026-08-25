@@ -23,10 +23,11 @@ jobs:
       - run: npm test
       - run: npm run build
         env:
-          BASE_PATH: /${{ github.event.repository.name }}/
+          # BASE_PATH repo variable is set to "/" once the custom domain is live; default is the project path.
+          BASE_PATH: ${{ vars.BASE_PATH || format('/{0}/', github.event.repository.name) }}
           VITE_TEAM_ID: ${{ vars.VITE_TEAM_ID }}
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+          # Zane adds the Firebase web config as a repository SECRET (Settings → Secrets and variables → Actions).
+          VITE_FIREBASE_CONFIG: ${{ secrets.VITE_FIREBASE_CONFIG || vars.VITE_FIREBASE_CONFIG }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

@@ -11,7 +11,7 @@
     "extract": "node scripts/extract-exchanges.mjs"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.112.4",
+    "firebase": "^12.18.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

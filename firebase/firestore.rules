@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Append-only team event log. Anyone with the (unguessable) team id can read and add entries;
+    // nothing can ever be edited or deleted. serverTs must be the server's clock.
+    match /teams/{teamId}/events/{eventId} {
+      allow read: if teamId.size() >= 20;
+      allow create: if teamId.size() >= 20
+        && request.resource.data.keys().hasOnly(['id', 'v', 'ts', 'seenTs', 'deviceId', 'role', 'type', 'payload', 'serverTs'])
+        && request.resource.data.id == eventId
+        && request.resource.data.serverTs == request.time;
+      allow update, delete: if false;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

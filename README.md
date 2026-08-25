@@ -3,7 +3,7 @@
 Offline-first website for a 9-runner, one-van Hood to Coast team: who's running, when the van must leave, projected finish, per-leg info from the official maps, and an append-only shared log that syncs when there's signal.
 
 - **Live:** https://zsoren.github.io/h2c-tracker-c0cd/ (deploys from `main` via GitHub Actions)
-- **Plan / design:** the council-reviewed plan (v5) — see `docs/STATUS.md` for current status and `docs/ZANE-TUESDAY.md` for the owner's setup steps.
+- **Plan / design:** the council-reviewed plan (v5) — see `docs/STATUS.md` for current status and `docs/ZANE-SETUP.md` for the owner's setup steps.
 
 ## Develop
 
@@ -31,11 +31,11 @@ node scripts/live-check.mjs             # smoke test against the deployed site
 
 ## Sync (optional)
 
-Set repository variables `VITE_TEAM_ID` (≥20 random chars), `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`; create the table with `supabase/schema.sql`. Without them the site runs in single-phone mode with copy/paste plan links.
+Set repository variable `VITE_TEAM_ID` (≥20 random chars) and repository secret `VITE_FIREBASE_CONFIG` (the Firebase web config object); publish `firebase/firestore.rules` in the Firebase console. Without them the site runs in single-phone mode with copy/paste plan links.
 
 ## Architecture (short)
 
 - `src/model/` — pure engine: event log reducer (`events.ts`), projection (`projection.ts`), handoff-sheet rules (`sheet.ts`), time helpers.
 - `src/state/` — store (localStorage is the only local source of truth), router, share links.
-- `src/sync/` — Supabase outbox/realtime transport; dev BroadcastChannel transport.
+- `src/sync/` — Firestore outbox/snapshot transport (memory cache only; localStorage stays the source of truth); dev BroadcastChannel transport.
 - `src/screens/`, `src/components/` — NOW, Schedule, Leg detail, Runners, Info; handoff / expected-time / change-runner / drop-runner sheets.
