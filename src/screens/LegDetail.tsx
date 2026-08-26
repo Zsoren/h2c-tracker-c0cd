@@ -75,7 +75,9 @@ export function LegDetail({ snap, n }: { snap: Snapshot; n: number }) {
       <div className="btnrow">
         {leg.pdfUrl && <a className="btn" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }} href={leg.pdfUrl} target="_blank" rel="noreferrer">Official leg map (PDF) ↗</a>}
         {leg.videoId && <a className="btn" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }} href={`https://www.youtube.com/watch?v=${leg.videoId}`} target="_blank" rel="noreferrer">Video tour ↗</a>}
+        <a className="btn" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }} href={`${import.meta.env.BASE_URL}gpx/leg-${n}.gpx`} download={`HTC-2026-Leg-${n}.gpx`}>GPX ⬇</a>
       </div>
+      <div className="muted tiny" style={{ marginTop: -4, marginBottom: 6 }}>GPX: the route from the official H2C Strava map, cut at the exchange pins (simplified). Open it in Strava / Garmin / Gaia; the PDF is the authority.</div>
 
       <h2 className="sub">Van · {leg.vanSupport === 'no' ? 'NO VAN SUPPORT' : leg.vanSupport === 'restricted' ? 'RESTRICTED' : 'van support OK'}</h2>
       {leg.vanNote && <div className={leg.vanSupport === 'no' ? 'warn' : 'note'}>{leg.vanNote}</div>}

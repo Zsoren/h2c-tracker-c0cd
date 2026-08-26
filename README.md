@@ -29,6 +29,10 @@ node scripts/live-check.mjs             # smoke test against the deployed site
 - `src/data/team.json` — runners, paces, leg assignments, planned start (from the team sheet).
 - `src/data/legs.json` — built by `node scripts/build-legs.mjs <course-maps.html> <videos.json> <exchanges.json>` from `scripts/sheet-legs.mjs` (sheet transcription), the official course-maps page (PDF + video links) and `scripts/extract-exchanges.mjs` output (exchange address/GPS/van rules/directions from the official leg PDFs).
 
+## GPX
+
+`public/gpx/leg-N.gpx` are cut from the full-course route embedded in the official H2C Strava route page (route 3332059630250616740, H2C Strava club), at the exchange GPS pins. Regenerate: `node scripts/capture-strava2.mjs <embed-url> <dir>` then `node scripts/build-gpx.mjs <dir>/00-*.bin`. The build prints track length vs. official mileage per leg.
+
 ## Sync (optional)
 
 Set repository variable `VITE_TEAM_ID` (≥20 random chars) and repository secret `VITE_FIREBASE_CONFIG` (the Firebase web config object); publish `firebase/firestore.rules` in the Firebase console. Without them the site runs in single-phone mode with copy/paste plan links.
