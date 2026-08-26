@@ -76,13 +76,15 @@ export function Info({ snap, section }: { snap: Snapshot; section?: string }) {
           {TEAM.runners.map(r => <option key={r.id} value={r.id}>{r.name} ({fmtPace(state.paces[r.id])}/mi)</option>)}
         </select>
       </div>
-      <label className="switch" style={{ marginTop: 8 }}>
-        <span>Captain's phone <span className="muted small">— wins conflicts; only one phone should be captain</span></span>
-        <input type="checkbox" checked={settings.isCaptain} onChange={e => {
-          if (e.target.checked && !confirm('Only one phone should be captain. Turn on?')) return
-          store.setSettings({ isCaptain: e.target.checked })
-        }} />
-      </label>
+      {(settings.iAmRunnerId === 'Z' || settings.isCaptain) && (
+        <label className="switch" style={{ marginTop: 8 }}>
+          <span>Captain's phone <span className="muted small">— wins conflicts; only one phone should be captain</span></span>
+          <input type="checkbox" checked={settings.isCaptain} onChange={e => {
+            if (e.target.checked && !confirm('Only one phone should be captain. Turn on?')) return
+            store.setSettings({ isCaptain: e.target.checked })
+          }} />
+        </label>
+      )}
 
       <h2 className="sub">Offline setup</h2>
       <div className="pre">

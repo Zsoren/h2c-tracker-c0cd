@@ -2,21 +2,110 @@
   "teamName": "Sicat Social Run Club",
   "plannedStart": "2026-08-28T03:35:00-07:00",
   "runners": [
-    { "id": "D",  "name": "Dessirea Rufino",      "short": "Dessirea",   "initials": "D",  "paceSec": 600 },
-    { "id": "W",  "name": "Warren Mead",          "short": "Warren",     "initials": "W",  "paceSec": 480 },
-    { "id": "N",  "name": "Nicole Oesterholm",    "short": "Nicole",     "initials": "N",  "paceSec": 540 },
-    { "id": "B",  "name": "Breanna Krumins",      "short": "Breanna",    "initials": "B",  "paceSec": 600 },
-    { "id": "J",  "name": "John Oesterholm",      "short": "John",       "initials": "J",  "paceSec": 480 },
-    { "id": "Z",  "name": "Zane Sorenson",        "short": "Zane",       "initials": "Z",  "paceSec": 600 },
-    { "id": "A",  "name": "Alexandria Lacandazo", "short": "Alexandria", "initials": "A",  "paceSec": 720 },
-    { "id": "K",  "name": "Gene Kevin Sicat",     "short": "Kevin",      "initials": "K",  "paceSec": 600 },
-    { "id": "Je", "name": "Jerald Sicat",         "short": "Jerald",     "initials": "Je", "paceSec": 660 }
+    {
+      "id": "D",
+      "name": "Dessirea Rufino",
+      "short": "Des",
+      "initials": "D",
+      "paceSec": 600
+    },
+    {
+      "id": "W",
+      "name": "Warren Mead",
+      "short": "Warren",
+      "initials": "W",
+      "paceSec": 480
+    },
+    {
+      "id": "N",
+      "name": "Nicole Oesterholm",
+      "short": "Nicole",
+      "initials": "N",
+      "paceSec": 540
+    },
+    {
+      "id": "B",
+      "name": "Breanna Krumins",
+      "short": "Bre",
+      "initials": "B",
+      "paceSec": 600
+    },
+    {
+      "id": "J",
+      "name": "John Oesterholm",
+      "short": "John",
+      "initials": "J",
+      "paceSec": 480
+    },
+    {
+      "id": "Z",
+      "name": "Zane Sorenson",
+      "short": "Zane",
+      "initials": "Z",
+      "paceSec": 600
+    },
+    {
+      "id": "A",
+      "name": "Alexandria Lacandazo",
+      "short": "Alex",
+      "initials": "A",
+      "paceSec": 720
+    },
+    {
+      "id": "K",
+      "name": "Gene Kevin Sicat",
+      "short": "Kevin",
+      "initials": "K",
+      "paceSec": 600
+    },
+    {
+      "id": "Je",
+      "name": "Jerald Sicat",
+      "short": "Jerald",
+      "initials": "Je",
+      "paceSec": 660
+    }
   ],
   "assignments": [
-    "D","W","N","B","J","Z","A","K","Je",
-    "D","W","N","B","J","Z","A","K","Je",
-    "D","W","N","B","J","Z","A","K","Je",
-    "D","W","N","B","J","Z","A","K","Je"
+    "D",
+    "W",
+    "N",
+    "B",
+    "J",
+    "Z",
+    "A",
+    "K",
+    "Je",
+    "D",
+    "W",
+    "N",
+    "B",
+    "J",
+    "Z",
+    "A",
+    "K",
+    "Je",
+    "D",
+    "W",
+    "N",
+    "B",
+    "J",
+    "Z",
+    "A",
+    "K",
+    "Je",
+    "D",
+    "W",
+    "N",
+    "B",
+    "J",
+    "Z",
+    "A",
+    "K",
+    "Je"
   ],
-  "sun": { "sunrise": "06:25", "sunset": "19:55" }
+  "sun": {
+    "sunrise": "06:25",
+    "sunset": "19:55"
+  }
 }

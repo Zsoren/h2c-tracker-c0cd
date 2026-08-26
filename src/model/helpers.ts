@@ -1,20 +1,6 @@
-import type { Leg, RaceState, RunnerId, TeamData } from './types'
+import type { Leg } from './types'
 import type { Projection } from './projection'
-import { N_LEGS } from './events'
 import { TZ } from './time'
-
-/** Default driver for leg N: the runner who ran leg N−4 (rested, not on deck); never the runner of N−1, N or N+1. */
-export function defaultDriver(team: TeamData, s: RaceState, n: number): RunnerId | null {
-  const avoid = new Set<RunnerId>([s.assignments[n - 1], s.assignments[n - 2], s.assignments[n]].filter(Boolean) as RunnerId[])
-  const order: number[] = []
-  for (let k = n - 4; k >= 1; k--) order.push(k)
-  for (let k = n + 5; k <= N_LEGS; k++) order.push(k)
-  for (const k of order) {
-    const r = s.assignments[k - 1]
-    if (r && !avoid.has(r) && s.runnerStatus[r] === 'active') return r
-  }
-  return team.runners.find(r => !avoid.has(r.id) && s.runnerStatus[r.id] === 'active')?.id ?? null
-}
 
 export interface Reminder { text: string; key: string }
 

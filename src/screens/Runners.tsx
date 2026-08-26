@@ -7,64 +7,62 @@ import { project, runnerMiles, suggestReplacement, backToBack } from '../model/p
 import { Sheet } from '../components/Sheet'
 import type { RaceState, RunnerId } from '../model/types'
 
-export function Runners({ snap }: { snap: Snapshot }) {
+/** One runner: their legs and times, pace, actual paces, drop/reactivate. */
+export function RunnerDetail({ snap, id }: { snap: Snapshot; id: RunnerId }) {
   const now = useNow(30000)
   const { state, proj, settings } = snap
-  const [pace, setPace] = useState<RunnerId | null>(null)
-  const [drop, setDrop] = useState<RunnerId | null>(null)
-  const me = settings.iAmRunnerId
-  const order = [...TEAM.runners].sort((a, b) => (a.id === me ? -1 : b.id === me ? 1 : 0))
+  const r = TEAM.runners.find(x => x.id === id)
+  const [pace, setPace] = useState(false)
+  const [drop, setDrop] = useState(false)
+  if (!r) return <div className="page"><button className="back" onClick={() => go('home')}>‹ Home</button><p>No such runner.</p></div>
+  const legs = proj.legs.filter(l => l.runnerId === r.id)
+  const miles = runnerMiles(LEGS, state.assignments, r.id)
+  const climb = legs.reduce((a, l) => a + LEGS[l.n - 1].gain, 0)
+  const dropped = state.runnerStatus[r.id] === 'dropped'
+  const actuals = legs.filter(l => l.startKind === 'actual' && l.endKind === 'actual')
   return (
     <div className="page">
-      <h1 className="title">Runners</h1>
+      <button className="back" onClick={() => go('home')}>‹ Home</button>
+      <h1 className="title">{r.short} <span className="muted">· {r.name}</span>{r.id === settings.iAmRunnerId ? <span className="tag dim" style={{ marginLeft: 8 }}>YOU</span> : null}{dropped ? <span className="tag warn" style={{ marginLeft: 8 }}>DROPPED</span> : null}</h1>
+      <div className="card">
+        <div className="kv">
+          <span className="k">Pace</span><span><button className="btn" onClick={() => setPace(true)}>{fmtPace(state.paces[r.id])}/mi · change</button></span>
+          <span className="k">Legs</span><span>{legs.length} · {miles} mi · +{climb} ft climb</span>
+        </div>
+      </div>
+      <h2 className="sub">Legs</h2>
       <div className="list">
-        {order.map(r => {
-          const legs = proj.legs.filter(l => l.runnerId === r.id)
-          const miles = runnerMiles(LEGS, state.assignments, r.id)
-          const climb = legs.reduce((a, l) => a + LEGS[l.n - 1].gain, 0)
-          const dropped = state.runnerStatus[r.id] === 'dropped'
-          const actuals = legs.filter(l => l.startKind === 'actual' && l.endKind === 'actual')
+        {legs.map(l => {
+          const L = LEGS[l.n - 1]
           return (
-            <div key={r.id} className="card" style={{ opacity: dropped ? 0.6 : 1 }}>
-              <div className="row">
-                <div className="grow"><b style={{ fontSize: 19 }}>{r.short}</b>{r.id === me ? <span className="tag dim" style={{ marginLeft: 8 }}>YOU</span> : null}{dropped ? <span className="tag warn" style={{ marginLeft: 8 }}>DROPPED</span> : null}</div>
-                <button className="btn" onClick={() => setPace(r.id)}>{fmtPace(state.paces[r.id])}/mi</button>
+            <button key={l.n} className={'item' + (proj.phase === 'racing' && proj.currentLeg === l.n ? ' current' : '')} onClick={() => go(`leg/${l.n}`)}>
+              <div className="n">{l.n}</div>
+              <div>
+                <div className="t">{L.miles} mi · {fmtHMS(l.durationSec)}{l.expectEdited ? ' (edited)' : ''}{l.endKind === 'actual' && l.startKind === 'actual' ? ` · ran ${fmtPace(l.durationSec / L.miles)}/mi` : l.endKind === 'est' ? ' · est.' : ''}</div>
+                <div className="s"><span className={'badge gear' + (l.gear === 'NIGHT' ? ' night' : '')}>{l.gear}</span>{L.vanSupport === 'no' && <span className="badge">NO VAN</span>}{L.notes.map(x => <span key={x} className="badge">{x.replace('Little/No Shade', 'NO SHADE').replace(' (Poss Dust)', '').toUpperCase()}</span>)}</div>
               </div>
-              <div className="muted small">{legs.length} legs · {miles} mi · +{climb} ft</div>
-              <div className="list" style={{ marginTop: 8, gap: 4 }}>
-                {legs.map(l => (
-                  <button key={l.n} className="row" style={{ background: 'none', border: 0, padding: '4px 0', textAlign: 'left', minHeight: 36 }} onClick={() => go(`leg/${l.n}`)}>
-                    <span className="nowrap"><b>Leg {l.n}</b> · {LEGS[l.n - 1].miles} mi</span>
-                    <span className="grow ellip muted small">{fmtTimeRel(l.start, now)} → {fmtClock(l.end)} · {fmtHMS(l.durationSec)}{l.endKind === 'actual' && l.startKind === 'actual' ? ' ✓' : l.endKind === 'est' ? ' est.' : ''}</span>
-                    <span className={'badge gear' + (l.gear === 'NIGHT' ? ' night' : '')}>{l.gear}</span>
-                  </button>
-                ))}
-              </div>
-              {actuals.length > 0 && (
-                <div className="muted small" style={{ marginTop: 6 }}>
-                  Actual pace: {actuals.map(l => `Leg ${l.n} ${fmtPace(l.durationSec / LEGS[l.n - 1].miles)}`).join(' · ')}
-                  {legs.some(l => l.endKind === 'projected') && (
-                    <button className="link" style={{ background: 'none', border: 0, color: 'var(--amber)', fontWeight: 800, padding: '0 6px', minHeight: 32 }} onClick={() => {
-                      const last = actuals[actuals.length - 1]
-                      const p = Math.round(last.durationSec / LEGS[last.n - 1].miles)
-                      store.dispatch('pace_set', { runnerId: r.id, paceSec: p })
-                    }}>use latest for remaining legs</button>
-                  )}
-                </div>
-              )}
-              {!dropped && <div className="btnrow" style={{ marginBottom: 0 }}><button className="btn" onClick={() => setDrop(r.id)}>Drop runner…</button></div>}
-              {dropped && <div className="btnrow" style={{ marginBottom: 0 }}><button className="btn" onClick={() => store.dispatch('runner_status_set', { runnerId: r.id, status: 'active' })}>Reactivate</button></div>}
-            </div>
+              <div className="r"><div>{fmtTimeRel(l.start, now)}</div><div>→ {fmtClock(l.end)}</div></div>
+            </button>
           )
         })}
       </div>
-      {pace && <PaceSheet snap={snap} runnerId={pace} onClose={() => setPace(null)} />}
-      {drop && <DropSheet snap={snap} runnerId={drop} onClose={() => setDrop(null)} />}
+      {actuals.length > 0 && legs.some(l => l.endKind === 'projected') && (
+        <div className="btnrow"><button className="btn" onClick={() => {
+          const last = actuals[actuals.length - 1]
+          store.dispatch('pace_set', { runnerId: r.id, paceSec: Math.round(last.durationSec / LEGS[last.n - 1].miles) })
+        }}>Use latest actual pace ({fmtPace(actuals[actuals.length - 1].durationSec / LEGS[actuals[actuals.length - 1].n - 1].miles)}) for remaining legs</button></div>
+      )}
+      <h2 className="sub">If {r.short} can't continue</h2>
+      {!dropped
+        ? <div className="btnrow"><button className="btn" onClick={() => setDrop(true)}>Drop runner…</button></div>
+        : <div className="btnrow"><button className="btn" onClick={() => store.dispatch('runner_status_set', { runnerId: r.id, status: 'active' })}>Reactivate</button></div>}
+      {pace && <PaceSheet snap={snap} runnerId={r.id} onClose={() => setPace(false)} />}
+      {drop && <DropSheet snap={snap} runnerId={r.id} onClose={() => setDrop(false)} />}
     </div>
   )
 }
 
-function PaceSheet({ snap, runnerId, onClose }: { snap: Snapshot; runnerId: RunnerId; onClose: () => void }) {
+export function PaceSheet({ snap, runnerId, onClose }: { snap: Snapshot; runnerId: RunnerId; onClose: () => void }) {
   const { state, proj } = snap
   const cur = state.paces[runnerId]
   const [text, setText] = useState(fmtPace(cur))
@@ -86,7 +84,7 @@ function PaceSheet({ snap, runnerId, onClose }: { snap: Snapshot; runnerId: Runn
   )
 }
 
-function DropSheet({ snap, runnerId, onClose }: { snap: Snapshot; runnerId: RunnerId; onClose: () => void }) {
+export function DropSheet({ snap, runnerId, onClose }: { snap: Snapshot; runnerId: RunnerId; onClose: () => void }) {
   const { state, proj } = snap
   const remaining = proj.legs.filter(l => l.runnerId === runnerId && l.n >= Math.max(1, proj.currentLeg)).map(l => l.n)
   const [picks, setPicks] = useState<Record<number, RunnerId>>(() => {

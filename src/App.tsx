@@ -3,24 +3,26 @@ import { useRace, isIOS, useStandalone } from './state/hooks'
 import { useRoute, go } from './state/router'
 import { store, TEAM } from './state/store'
 import { decodeShare } from './state/share'
+import { Home } from './screens/Home'
 import { Now } from './screens/Now'
 import { Schedule } from './screens/Schedule'
 import { LegDetail } from './screens/LegDetail'
-import { Runners } from './screens/Runners'
+import { RunnerDetail } from './screens/Runners'
 import { Info } from './screens/Info'
 import { Sheet } from './components/Sheet'
-import { fmtPace } from './model/time'
 
 interface BeforeInstallPromptEvent extends Event { prompt: () => Promise<void> }
 
 export default function App() {
   const snap = useRace()
-  const route = useRoute()
+  const routeRaw = useRoute()
   const standalone = useStandalone()
   const [imported, setImported] = useState<number | null>(null)
   const [installEvt, setInstallEvt] = useState<BeforeInstallPromptEvent | null>(null)
   const [readyChip, setReadyChip] = useState(false)
   const { settings, flags, storageOk } = snap
+  // Landing page: Home before the race, NOW once it has started.
+  const route = routeRaw.tab === 'default' ? ({ tab: snap.proj.phase === 'pre' ? 'home' : 'now' } as const) : routeRaw
 
   // Ingest a pasted/shared "#s=" link once, then land on NOW.
   useEffect(() => {
@@ -58,15 +60,16 @@ export default function App() {
           <button className="plain" onClick={() => store.setSettings({ bannerDismissed: true })}>Not now</button>
         </div>
       )}
+      {route.tab === 'home' && <Home snap={snap} />}
       {route.tab === 'now' && <Now snap={snap} />}
       {route.tab === 'schedule' && <Schedule snap={snap} />}
       {route.tab === 'leg' && <LegDetail snap={snap} n={route.n} />}
-      {route.tab === 'runners' && <Runners snap={snap} />}
+      {route.tab === 'runner' && <RunnerDetail snap={snap} id={route.id} />}
       {route.tab === 'info' && <Info snap={snap} section={route.section} />}
       <nav className="tabbar">
+        <Tab id="home" label="Home" ico="⌂" active={route.tab === 'home' || route.tab === 'runner'} />
         <Tab id="now" label="Now" ico="⏱" active={route.tab === 'now'} />
         <Tab id="schedule" label="Schedule" ico="≡" active={route.tab === 'schedule' || route.tab === 'leg'} />
-        <Tab id="runners" label="Runners" ico="👟" active={route.tab === 'runners'} />
         <Tab id="info" label="Info" ico="ⓘ" active={route.tab === 'info'} />
       </nav>
       {showIAm && (
@@ -74,7 +77,7 @@ export default function App() {
           <h2 style={{ fontSize: 26 }}>Which runner are you?</h2>
           <div className="names">Gives you a personal "You" line on NOW. You can change it under Info.</div>
           <div className="chips" style={{ flexWrap: 'wrap' }}>
-            {TEAM.runners.map(r => <button key={r.id} className="chip name" onClick={() => store.setSettings({ iAmRunnerId: r.id, iAmPrompted: true })}>{r.short} <span className="muted small">&nbsp;{fmtPace(snap.state.paces[r.id])}</span></button>)}
+            {TEAM.runners.map(r => <button key={r.id} className="chip name" onClick={() => store.setSettings({ iAmRunnerId: r.id, iAmPrompted: true })}>{r.short}</button>)}
           </div>
           <button className="cancel" onClick={() => store.setSettings({ iAmPrompted: true })}>Skip</button>
         </Sheet>

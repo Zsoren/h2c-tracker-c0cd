@@ -38,4 +38,4 @@ Set repository variable `VITE_TEAM_ID` (≥20 random chars) and repository secre
 - `src/model/` — pure engine: event log reducer (`events.ts`), projection (`projection.ts`), handoff-sheet rules (`sheet.ts`), time helpers.
 - `src/state/` — store (localStorage is the only local source of truth), router, share links.
 - `src/sync/` — Firestore outbox/snapshot transport (memory cache only; localStorage stays the source of truth); dev BroadcastChannel transport.
-- `src/screens/`, `src/components/` — NOW, Schedule, Leg detail, Runners, Info; handoff / expected-time / change-runner / drop-runner sheets.
+- `src/screens/`, `src/components/` — Home (roster, paces, stats), NOW, Schedule, Leg detail, Runner detail, Info; handoff / expected-time / change-runner / drop-runner sheets.

@@ -83,5 +83,7 @@ export function fmtPace(paceSec: number): string {
 export function fmtDelta(sec: number): string {
   const m = Math.round(sec / 60)
   if (m === 0) return 'on plan'
-  return m > 0 ? `${m} min behind` : `${-m} min ahead`
+  const abs = Math.abs(m)
+  const body = abs < 120 ? `${abs} min` : abs < 48 * 60 ? `${Math.floor(abs / 60)}h ${String(abs % 60).padStart(2, '0')}m` : `${Math.floor(abs / 1440)}d ${Math.floor((abs % 1440) / 60)}h`
+  return m > 0 ? `${body} behind` : `${body} ahead`
 }

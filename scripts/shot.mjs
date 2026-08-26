@@ -81,7 +81,8 @@ if (scenario === 'all' || scenario === 'racing') {
         await page.click('.sheet .cancel')
         await page.goto(url + '#/schedule'); await page.waitForSelector('.list'); await shot(page, 'schedule-' + tag)
         await page.goto(url + '#/leg/14'); await page.waitForSelector('.page'); await shot(page, 'leg14-' + tag)
-        await page.goto(url + '#/runners'); await page.waitForSelector('.list'); await shot(page, 'runners-' + tag)
+        await page.goto(url + '#/home'); await page.waitForSelector('.list'); await shot(page, 'home-' + tag)
+        await page.goto(url + '#/runner/Z'); await page.waitForSelector('.list'); await shot(page, 'runner-' + tag)
         await page.goto(url + '#/info'); await page.waitForSelector('.page'); await shot(page, 'info-' + tag)
       }
     } })

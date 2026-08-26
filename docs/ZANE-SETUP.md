@@ -30,6 +30,6 @@ Nothing here needs to be pasted into chat. The one value that matters (the Fireb
 ## D. Phone check (5 min)
 
 1. Open **https://h2c.zanesorenson.com/** in Safari (iPhone) or Chrome (Android). Pick your name when asked.
-2. Tap around: NOW, Schedule, a leg, Runners, Info. Try **START RACE** → confirm → **UNDO**.
+2. Tap around: Home (roster, paces, start/finish), NOW, Schedule, a leg, Info. Try **START RACE** → confirm → **UNDO**.
 3. Schedule → **Leg 6 → Open in Maps** (should be Sandy High School); same for **Leg 12** (OMSI gravel lot) and **Leg 30** (HWY 202 near Astoria).
 4. Send me a screenshot of NOW and anything that looks off or confusing.

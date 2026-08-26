@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { LEGS, TEAM, runnerShort, store, type Snapshot } from '../state/store'
+import { LEGS, runnerShort, store, type Snapshot } from '../state/store'
 import { useNow } from '../state/hooks'
 import { go } from '../state/router'
 import { fmtClock, fmtDelta, fmtDuration, fmtRelative, fmtTimeRel } from '../model/time'
-import { defaultDriver, reminders } from '../model/helpers'
+import { reminders } from '../model/helpers'
 import { showIJustFinished } from '../model/sheet'
 import { HandoffSheet } from '../components/HandoffSheet'
 import { ExpectSheet } from '../components/ExpectSheet'
@@ -19,13 +19,14 @@ export function Now({ snap }: { snap: Snapshot }) {
   const [sheet, setSheet] = useState<{ at: number; preset: number | null } | null>(null)
   const [expect, setExpect] = useState<number | null>(null)
   const [toast, setToast] = useState<Toast | null>(null)
-  const [driverPick, setDriverPick] = useState(false)
+  const [conflictOpen, setConflictOpen] = useState(false)
 
   useEffect(() => {
     if (!toast) return
     const t = setTimeout(() => setToast(null), Math.max(0, toast.until - Date.now()))
     return () => clearTimeout(t)
   }, [toast])
+  useEffect(() => { if (toast && !snap.events.some(e => e.id === toast.eventId)) setToast(null) }, [snap.events, toast])
 
   const phase = proj.phase
   const n = proj.currentLeg
@@ -36,16 +37,15 @@ export function Now({ snap }: { snap: Snapshot }) {
   const me = settings.iAmRunnerId
   const myNext = me ? proj.legs.find(l => l.runnerId === me && l.n >= Math.max(1, n)) ?? null : null
   const iJust = showIJustFinished(proj, state, me)
+  const late = lp && typeof lp.leaveBy === 'number' && now > lp.leaveBy
+  const openSheet = (preset: number | null = null) => setSheet({ at: store.now(), preset })
+
   // conflict notes: a handoff another phone logged differently while offline (persistent until dismissed)
   const conflict = Object.entries(state.alternates)
     .filter(([k]) => k.startsWith('handoff:'))
     .flatMap(([k, alts]) => alts.map(a => ({ leg: +k.split(':')[1], loser: a.event, winner: a.winner })))
     .find(c => !settings.dismissedAlts.includes(c.loser.id)) ?? null
-  const [conflictOpen, setConflictOpen] = useState(false)
   const rems = reminders(LEGS, proj, now).slice(0, conflict ? 1 : 2)
-  const driver = lp ? (state.drivers[n] ?? defaultDriver(TEAM, state, n)) : null
-  const late = lp && typeof lp.leaveBy === 'number' && now > lp.leaveBy
-  const openSheet = (preset: number | null = null) => setSheet({ at: store.now(), preset })
 
   function onLogged(eventId: string, legN: number, at: number) {
     setSheet(null)
@@ -53,7 +53,6 @@ export function Now({ snap }: { snap: Snapshot }) {
     setToast({ eventId, text, until: Date.now() + 10000 })
   }
   function undo() { if (toast) { store.undo(toast.eventId); setToast(null) } }
-  useEffect(() => { if (toast && !snap.events.some(e => e.id === toast.eventId)) setToast(null) }, [snap.events, toast])
 
   return (
     <div className="now">
@@ -61,66 +60,66 @@ export function Now({ snap }: { snap: Snapshot }) {
 
       {/* 2. Running */}
       {phase === 'pre' && (
-        <div className="card running tap" onClick={() => go('leg/1')}>
-          <div className="label">Race starts {fmtTimeRel(state.plannedStart, now)}</div>
-          <div className="eta">{fmtRelative(state.plannedStart, now).replace(/^in /, '')}<span className="adj">to go</span></div>
-          <div className="who">Leg 1 — {runnerShort(state.assignments[0])}</div>
-          <div className="sub">{proj.legs[0].gear} GEAR · {LEGS[0].vanSupport === 'no' ? 'no van support' : ''}</div>
+        <div className="card running">
+          <div className="lhead" onClick={() => go('leg/1')}><span className="legtag">LEG 1</span><span className="grow ellip">Timberline → Exch 1 · {LEGS[0].exchangeName}</span><span className="chev">›</span></div>
+          <div className="who">{runnerShort(state.assignments[0])} · {LEGS[0].miles} mi · {proj.legs[0].gear} GEAR</div>
+          <div className="eta">{fmtRelative(state.plannedStart, now).replace(/^in /, '')}<span className="adj">to start</span></div>
+          <div className="sub">Race starts {fmtTimeRel(state.plannedStart, now)}{LEGS[0].vanSupport === 'no' ? ' · no van support on Leg 1' : ''}</div>
         </div>
       )}
       {phase === 'racing' && lp && leg && (
         <div className="card running">
-          <div className="label" onClick={() => go(`leg/${n}`)}>Running · Leg {n} · {leg.miles} mi · started {fmtClock(lp.start)}{lp.startKind === 'est' ? ' (est.)' : ''}</div>
-          <div className="who" onClick={() => go(`leg/${n}`)}>{runnerShort(lp.runnerId)}</div>
+          <div className="lhead" onClick={() => go(`leg/${n}`)}><span className="legtag">LEG {n}</span><span className="grow ellip">→ Exch {n} · {leg.exchangeName}</span><span className="chev">›</span></div>
+          <div className="who" onClick={() => go(`leg/${n}`)}>{runnerShort(lp.runnerId)} · {leg.miles} mi · started {fmtClock(lp.start)}{lp.startKind === 'est' ? ' (est.)' : ''}</div>
           <div className="eta" onClick={() => setExpect(n)} role="button" aria-label="Adjust expected time">
             {fmtClock(lp.end)}<span className="adj">adjust</span>
           </div>
-          <div className="sub" onClick={() => go(`leg/${n}`)}>Exch {n} · {fmtRelative(lp.end, now)}{lp.expectEdited ? ' · (edited)' : ''}</div>
+          <div className="sub" onClick={() => setExpect(n)}>arrives at Exch {n} {fmtRelative(lp.end, now)}{lp.expectEdited ? ' · (edited)' : ''}</div>
           <div className="sub finmini" style={{ display: 'none' }}>Finish {fmtTimeRel(proj.finish, now)} · {fmtDelta(proj.deltaSec)}</div>
         </div>
       )}
       {phase === 'finished' && (
         <div className="card running">
-          <div className="label">Hood to Coast 2026</div>
+          <div className="lhead"><span className="legtag">DONE</span><span className="grow ellip">Hood to Coast 2026 · Seaside</span></div>
           <div className="eta">FINISHED</div>
           <div className="who">{fmtTimeRel(proj.finish, now)}</div>
           <div className="sub">{fmtDelta(proj.deltaSec)} · total {fmtDuration(proj.finish - (state.actual[0] ?? state.plannedStart))}</div>
         </div>
       )}
 
-      {/* 3. LEAVE BY + driver */}
+      {/* 3. LEAVE BY */}
       {phase === 'racing' && lp && (
-        <div className={'line' + (late ? ' late' : '')} onClick={() => setDriverPick(true)}>
+        <div className={'line' + (late ? ' late' : '')} onClick={() => go(`leg/${n}`)}>
           <span className="k">LEAVE</span>
           <span className="grow ellip">{n === 1 ? 'Timberline' : `Exch ${n - 1}`} {lp.leaveBy === 'now' ? 'NOW' : `by ${fmtClock(lp.leaveBy as number)}`}{late ? ' · LATE' : ''}</span>
-          <span className="nowrap">Driver: {runnerShort(driver)}</span>
+          <span className="nowrap small">→ Exch {n} ›</span>
         </div>
       )}
 
       {/* 4. Next */}
       {phase === 'racing' && nextLp && (
         <div className="line" onClick={() => go(`leg/${n + 1}`)}>
-          <span className="k">Next</span>
-          <span className="grow ellip">{runnerShort(nextLp.runnerId)} · Leg {n + 1}</span>
+          <span className="k">NEXT</span>
+          <span className="grow ellip"><b>Leg {n + 1}</b> · {runnerShort(nextLp.runnerId)} · {LEGS[n].miles} mi</span>
           <span className={'badge gear' + (nextLp.gear === 'NIGHT' ? ' night' : '')}>{nextLp.gear} GEAR</span>
         </div>
       )}
 
       {/* 5. On deck */}
       {phase === 'racing' && deckLp && (
-        <div className="line small ondeck"><span className="k">On deck</span><span className="grow ellip">{runnerShort(deckLp.runnerId)} · Leg {n + 2} · {fmtRelative(deckLp.start, now)}</span></div>
+        <div className="line small ondeck" onClick={() => go(`leg/${n + 2}`)}><span className="k">On deck</span><span className="grow ellip">Leg {n + 2} · {runnerShort(deckLp.runnerId)} · {fmtRelative(deckLp.start, now)}</span></div>
       )}
 
       {/* 6. Finish */}
       {phase !== 'finished' && (
-        <div className="line finishline"><span className="k">Finish</span><span className="grow ellip">{fmtTimeRel(proj.finish, now)}</span><span className="nowrap">{fmtDelta(proj.deltaSec)}</span></div>
+        <div className="line finishline" onClick={() => go('home')}><span className="k">Finish</span><span className="grow ellip">{fmtTimeRel(proj.finish, now)}</span><span className="nowrap">{fmtDelta(proj.deltaSec)}</span></div>
       )}
 
       {/* 7. You */}
       {me && phase !== 'finished' && (
         <div className="line small you">
           <span className="k">You</span>
-          <span className="grow ellip">{myNext ? `Leg ${myNext.n} ${fmtRelative(myNext.start, now)}` : 'all legs done'}</span>
+          <span className="grow ellip" onClick={() => myNext && go(`leg/${myNext.n}`)}>{myNext ? `Leg ${myNext.n} ${fmtRelative(myNext.start, now)}` : 'all legs done'}</span>
           {iJust != null && <button className="link" onClick={() => openSheet(iJust)}>I just finished</button>}
         </div>
       )}
@@ -152,29 +151,13 @@ export function Now({ snap }: { snap: Snapshot }) {
       ) : phase === 'pre' ? (
         <button className="bigbtn" onClick={() => openSheet(0)}>START RACE<span className="sub">Leg 1 — {runnerShort(state.assignments[0])}</span></button>
       ) : phase === 'racing' ? (
-        <button className="bigbtn" onClick={() => openSheet()}>{n === N_LEGS ? 'LOG FINISH' : 'LOG HANDOFF'}<span className="sub">{n === N_LEGS ? `Leg 36 — ${runnerShort(lp!.runnerId)}` : `Leg ${n} → ${n + 1}`}</span></button>
+        <button className="bigbtn" onClick={() => openSheet()}>{n === N_LEGS ? 'LOG FINISH' : 'LOG HANDOFF'}<span className="sub">{n === N_LEGS ? `Leg 36 — ${runnerShort(lp!.runnerId)}` : `Leg ${n} → ${n + 1} at Exch ${n}`}</span></button>
       ) : (
         <div className="bigbtn done">FINISHED {fmtTimeRel(proj.finish, now)} · {fmtDelta(proj.deltaSec)}</div>
       )}
 
       {sheet && <HandoffSheet open snap={snap} frozenAt={sheet.at} presetLeg={sheet.preset} onClose={() => setSheet(null)} onLogged={onLogged} />}
       {expect != null && <ExpectSheet open snap={snap} leg={expect} onClose={() => setExpect(null)} />}
-      {driverPick && lp && (
-        <DriverPicker n={n} current={driver} onClose={() => setDriverPick(false)} />
-      )}
     </div>
-  )
-}
-
-function DriverPicker({ n, current, onClose }: { n: number; current: string | null; onClose: () => void }) {
-  return (
-    <Sheet open onClose={onClose}>
-      <h2 style={{ fontSize: 24 }}>Driver for Leg {n}</h2>
-      <div className="names">Default: whoever ran 4 legs ago. Never the finisher, the runner out now, or the next runner.</div>
-      <div className="chips" style={{ flexWrap: 'wrap' }}>
-        {TEAM.runners.map(r => <button key={r.id} className={'chip name' + (r.id === current ? ' sel' : '')} onClick={() => { store.dispatch('driver_set', { leg: n, runnerId: r.id }); onClose() }}>{r.short}</button>)}
-      </div>
-      <button className="cancel" onClick={onClose}>Cancel</button>
-    </Sheet>
   )
 }

@@ -11,6 +11,8 @@ import { HandoffSheet } from '../components/HandoffSheet'
 import { Sheet } from '../components/Sheet'
 import { N_LEGS } from '../model/events'
 
+const TIMBERLINE_MAPS = 'https://maps.google.com/?q=45.3311,-121.7110'
+
 export function LegDetail({ snap, n }: { snap: Snapshot; n: number }) {
   const now = useNow(30000)
   const { state, proj } = snap
@@ -52,18 +54,31 @@ export function LegDetail({ snap, n }: { snap: Snapshot; n: number }) {
       <div className="kv"><span className="k">Gain / loss</span><span>+{leg.gain} / −{leg.loss} ft</span><span className="k">Net</span><span>{leg.net > 0 ? '+' : ''}{leg.net} ft</span></div>
       {leg.notes.length > 0 && <div className="note">{leg.notes.join(' · ')}</div>}
 
-      <h2 className="sub">Van · {leg.vanSupport === 'no' ? 'NO VAN SUPPORT' : leg.vanSupport === 'restricted' ? 'RESTRICTED' : 'van support OK'}</h2>
-      {leg.vanNote && <div className={leg.vanSupport === 'no' ? 'warn' : 'note'}>{leg.vanNote}</div>}
-      <div className="kv">
-        <span className="k">Exchange {n}</span><span><b>{leg.exchangeName}</b></span>
-        {leg.address && <><span className="k">Address</span><span style={{ userSelect: 'all' }}>{leg.address}</span></>}
-        {leg.lat != null && <><span className="k">GPS</span><span style={{ userSelect: 'all' }}>{leg.lat}, {leg.lng}</span></>}
+      <h2 className="sub">Where</h2>
+      <div className="card" style={{ marginBottom: 10 }}>
+        <div className="kv">
+          <span className="k">Starts at</span>
+          <span>
+            {n === 1 ? <b>Timberline Lodge (race start)</b> : <><b>Exch {n - 1}</b> · {LEGS[n - 2].exchangeName}</>}
+            {' '}<a href={n === 1 ? TIMBERLINE_MAPS : mapsUrl(LEGS[n - 2])} target="_blank" rel="noreferrer">Maps ↗</a>
+          </span>
+          <span className="k">Ends at</span>
+          <span>
+            <b>Exch {n}</b> · {leg.exchangeName}
+            {leg.address && <><br /><span style={{ userSelect: 'all' }}>{leg.address}</span></>}
+            {leg.lat != null && <><br /><span className="muted small" style={{ userSelect: 'all' }}>GPS {leg.lat}, {leg.lng}</span></>}
+            {' '}<a href={mapsUrl(leg)} target="_blank" rel="noreferrer">Maps ↗</a>
+          </span>
+        </div>
+        <div className="muted small" style={{ marginTop: 8 }}>The van drives to where the leg <b>ends</b> (Exch {n}) to meet {runnerShort(lp.runnerId)} and hand off to the next runner.</div>
       </div>
       <div className="btnrow">
-        <a className="btn" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }} href={mapsUrl(leg)} target="_blank" rel="noreferrer">Open in Maps ↗</a>
-        {leg.pdfUrl && <a className="btn" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }} href={leg.pdfUrl} target="_blank" rel="noreferrer">Official map (PDF) ↗</a>}
+        {leg.pdfUrl && <a className="btn" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }} href={leg.pdfUrl} target="_blank" rel="noreferrer">Official leg map (PDF) ↗</a>}
         {leg.videoId && <a className="btn" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }} href={`https://www.youtube.com/watch?v=${leg.videoId}`} target="_blank" rel="noreferrer">Video tour ↗</a>}
       </div>
+
+      <h2 className="sub">Van · {leg.vanSupport === 'no' ? 'NO VAN SUPPORT' : leg.vanSupport === 'restricted' ? 'RESTRICTED' : 'van support OK'}</h2>
+      {leg.vanNote && <div className={leg.vanSupport === 'no' ? 'warn' : 'note'}>{leg.vanNote}</div>}
       {leg.vanRouteNote && <><div className="muted small">Exchange notes (official)</div><p className="pre">{leg.vanRouteNote}</p></>}
       {leg.vanDirections && leg.vanDirections.length > 0 && <><div className="muted small">{leg.vanDirections.length ? 'Van route (official)' : ''}</div><p className="pre">{leg.vanDirections.join('\n')}</p></>}
 
