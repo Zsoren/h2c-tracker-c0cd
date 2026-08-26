@@ -1,6 +1,7 @@
 import { store } from '../state/store'
 import { startFirestore } from './firestore'
 import { startBroadcast } from './broadcast'
+import { parseFirebaseConfig } from './config'
 
 /** Start the sync layer if configured. Never blocks or throws into the UI. */
 export function startSync() {
@@ -8,7 +9,7 @@ export function startSync() {
   const team = import.meta.env.VITE_TEAM_ID as string | undefined
   try {
     if (raw && team && team.length >= 20) {
-      const config = parseConfig(raw)
+      const config = parseFirebaseConfig(raw)
       if (config) {
         store.setSync({ mode: 'on' })
         startFirestore({ config, team })
@@ -22,14 +23,4 @@ export function startSync() {
   } catch (e) {
     store.setSync({ error: String(e) })
   }
-}
-
-/** Accepts the JSON object from the Firebase console, or the `const firebaseConfig = {...};` snippet pasted whole. */
-function parseConfig(raw: string): Record<string, string> | null {
-  const m = /\{[\s\S]*\}/.exec(raw)
-  if (!m) return null
-  let s = m[0]
-  try { return JSON.parse(s) } catch { /* try relaxed */ }
-  s = s.replace(/(\w+)\s*:/g, '"$1":').replace(/'/g, '"').replace(/,\s*}/g, '}')
-  try { return JSON.parse(s) } catch { return null }
 }
