@@ -1,9 +1,46 @@
 import { useState } from 'react'
 import { TEAM, store, type Snapshot } from '../state/store'
 import { encodeShare, decodeShare } from '../state/share'
-import { fmtClock, fmtPace } from '../model/time'
+import { fmtClock, fmtHMS, fmtPace } from '../model/time'
 import { fromHHMM, toHHMM } from '../model/helpers'
 import { isIOS, isStandalone } from '../state/hooks'
+import { runnerShort } from '../state/store'
+import type { H2CEvent } from '../model/types'
+
+function describe(e: H2CEvent): string {
+  const p = e.payload
+  const leg = p.leg as number | undefined
+  switch (e.type) {
+    case 'handoff_logged': return leg === 0 ? `Race started ${fmtClock(p.at as number)}` : leg === 36 ? `Finish logged ${fmtClock(p.at as number)}` : `Leg ${leg} handoff ${fmtClock(p.at as number)}`
+    case 'assignment_set': return `Leg ${leg} → ${runnerShort(p.runnerId as string)}`
+    case 'runner_status_set': return `${runnerShort(p.runnerId as string)} ${p.status === 'dropped' ? 'dropped' : 'reactivated'}`
+    case 'pace_set': return `${runnerShort(p.runnerId as string)} pace ${fmtPace(p.paceSec as number)}`
+    case 'leg_expect_set': return p.durationSec == null ? `Leg ${leg} expected time reset` : `Leg ${leg} expected ${fmtHMS(p.durationSec as number)}`
+    case 'driver_set': return `Leg ${leg} driver ${runnerShort(p.runnerId as string | null)}`
+    case 'drive_min_set': return `Leg ${leg} drive time ${p.minutes} min`
+    case 'note_set': return `Leg ${leg} note ${p.text ? `"${String(p.text).slice(0, 30)}"` : 'cleared'}`
+    case 'planned_start_set': return `Planned start ${fmtClock(p.at as number)}`
+    case 'settings_set': return `Hill-adjust ${p.hillAdjust ? 'on' : 'off'}`
+    default: return e.type
+  }
+}
+
+function RecentChanges({ snap }: { snap: Snapshot }) {
+  const { events, settings } = snap
+  const undone = new Set(events.filter(e => e.type === 'undo').map(e => String(e.payload.targetEventId)))
+  const recent = events.filter(e => e.type !== 'undo').sort((a, b) => b.ts - a.ts).slice(0, 12)
+  if (!recent.length) return <div className="muted small">Nothing yet.</div>
+  return (
+    <div className="list" style={{ gap: 4 }}>
+      {recent.map(e => (
+        <div key={e.id} className="row" style={{ minHeight: 44, opacity: undone.has(e.id) ? 0.5 : 1 }}>
+          <span className="grow ellip small">{undone.has(e.id) ? '(undone) ' : ''}{describe(e)} <span className="muted">· {fmtClock(e.ts)} · {e.deviceId === settings.deviceId ? 'this phone' : e.role === 'captain' ? "captain's phone" : 'another phone'}</span></span>
+          {!undone.has(e.id) && <button className="btn" onClick={() => { if (confirm(`Undo "${describe(e)}"?`)) store.undo(e.id) }}>Undo</button>}
+        </div>
+      ))}
+    </div>
+  )
+}
 
 export function Info({ snap, section }: { snap: Snapshot; section?: string }) {
   const { settings, state, events, sync } = snap
@@ -90,6 +127,10 @@ EMERGENCY: 911 first, then race HQ (number on your team packet / handbook).`}
 
       <h2 className="sub">Roster</h2>
       <div className="kv">{TEAM.runners.map(r => <><span key={r.id + 'k'} className="k">{r.name}</span><span key={r.id + 'v'}>{r.phone ?? <span className="muted">—</span>}</span></>)}</div>
+
+      <h2 className="sub">Recent changes</h2>
+      <div className="muted small">Newest first, from every phone. Undo reverses one change (the undo itself syncs too).</div>
+      <RecentChanges snap={snap} />
 
       <h2 className="sub">Danger zone</h2>
       <div className="muted small">Clears every logged handoff and swap {sync.mode === 'on' ? 'on THIS phone (the team log is kept; it will reload from the team data)' : 'on this phone'}. Exports a backup first. Type RESET to enable.</div>

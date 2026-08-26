@@ -16,7 +16,8 @@ Plan: `C:\Users\Zane\.claude\plans\i-am-running-hood-synthetic-scroll.md` (counc
 ## Tuesday
 - Zane: `docs/ZANE-SETUP.md` (Firebase project + rules; add config as a GitHub secret himself; DNS CNAME; phone check; 3-pin spot check). Kevin confirmed.
 - Custom domain live Tue Aug 25 (h2c.zanesorenson.com; Cloudflare proxy had to be set to DNS-only; repo var BASE_PATH=/).
-- Me: once the Firebase secret exists → rebuild → real two-phone sync test; polish from Zane's screenshot.
+- Sync LIVE Tue Aug 25 evening: Firebase secret added by Zane; real two-browser test on h2c.zanesorenson.com — change visible on the other phone in ~2 s, status "Synced". (Console snippet parser fixed on the way.)
+- Me: polish from Zane's screenshot; Wed evening airplane-mode + conflict test with Zane.
 
 ## Wednesday evening
 - Airplane-mode + two-phone sync test with Zane (incl. deliberate conflict with captain on). Go/no-go on sync.

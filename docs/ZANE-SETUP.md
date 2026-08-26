@@ -2,7 +2,7 @@
 
 Nothing here needs to be pasted into chat. The one value that matters (the Firebase config) goes straight into GitHub through the website.
 
-## A. Firebase (10 min) — powers "everyone's phone updates"
+## A. Firebase — ✅ done Aug 25 (live sync verified)
 
 1. Go to https://console.firebase.google.com → **Create a project** (or "Add project").
    - Name: `h2c-tracker`. Turn **off** Google Analytics. Create.
@@ -15,7 +15,7 @@ Nothing here needs to be pasted into chat. The one value that matters (the Fireb
    - It shows a code block containing `const firebaseConfig = { apiKey: "...", authDomain: "...", ... };`
    - **Copy that whole block** (the copy button is fine). Don't paste it anywhere yet.
 
-## B. Put the config into GitHub (2 min) — instead of sending it to me
+## B. GitHub secret — ✅ done Aug 25
 
 1. Open https://github.com/Zsoren/h2c-tracker-c0cd/settings/secrets/actions
 2. **New repository secret** → Name: `VITE_FIREBASE_CONFIG` → Secret: paste the block you copied (the whole `const firebaseConfig = {...};` is fine, or just the `{...}` part) → **Add secret**.
