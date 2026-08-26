@@ -183,6 +183,15 @@ describe('reducer: merge rules', () => {
     const s = reduce(T, [handoff(14, t + MIN, { ts: 1000, dev: 'A', role: 'captain' }), handoff(14, t, { ts: 1100, dev: 'B', role: 'captain' })], t)
     expect(s.actual[14]).toBe(t); expect(s.captainDevices.sort()).toEqual(['A', 'B'])
   })
+  it('tracks whether a pace was actually entered (defaults stay hidden until then)', () => {
+    const s0 = initialState(T)
+    expect(s0.paceEntered.Z).toBe(false); expect(s0.paces.Z).toBe(600)
+    const e = ev('pace_set', { runnerId: 'Z', paceSec: 570 }, { ts: 10 })
+    const s1 = reduce(T, [e])
+    expect(s1.paceEntered.Z).toBe(true); expect(s1.paces.Z).toBe(570); expect(s1.paceEntered.W).toBe(false)
+    const s2 = reduce(T, [e, ev('undo', { targetEventId: e.id }, { ts: 20 })])
+    expect(s2.paceEntered.Z).toBe(false); expect(s2.paces.Z).toBe(600)
+  })
   it('makeEvent stamps seenTs from other devices only and strips undefined', () => {
     const log = [ev('pace_set', { runnerId: 'Z', paceSec: 600 }, { ts: 500, dev: 'A' }), ev('pace_set', { runnerId: 'Z', paceSec: 610 }, { ts: 900, dev: 'B' })]
     const e = makeEvent('note_set', { leg: 3, text: 'left side', extra: undefined }, { deviceId: 'A', role: 'member', log, now: 1000 })

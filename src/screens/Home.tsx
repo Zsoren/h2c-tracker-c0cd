@@ -33,7 +33,8 @@ export function Home({ snap }: { snap: Snapshot }) {
         {proj.phase !== 'pre' && <div className="btnrow" style={{ marginBottom: 0 }}><button className="btn primary" onClick={() => go('now')}>Open NOW ›</button></div>}
       </div>
 
-      <h2 className="sub">Roster · tap a name for their legs · tap a pace to change it</h2>
+      <h2 className="sub">Roster · tap a name for their legs · tap a pace to set it</h2>
+      {TEAM.runners.some(r => !state.paceEntered[r.id]) && <div className="muted small" style={{ marginBottom: 8 }}>"Set pace" = nobody has entered that runner's pace yet; the captain's estimate is used quietly until they do.</div>}
       <div className="list">
         {TEAM.runners.map(r => {
           const legs = LEGS.filter(l => state.assignments[l.n - 1] === r.id).map(l => l.n)
@@ -44,7 +45,7 @@ export function Home({ snap }: { snap: Snapshot }) {
                 <div className="t"><b>{r.short}</b> <span className="muted small">{r.name}</span>{r.id === me ? <span className="tag dim" style={{ marginLeft: 6 }}>YOU</span> : null}{dropped ? <span className="tag warn" style={{ marginLeft: 6 }}>DROPPED</span> : null}</div>
                 <div className="s">Legs {legs.length ? legs.join(' · ') : '—'} · {runnerMiles(LEGS, state.assignments, r.id)} mi</div>
               </button>
-              <button className="btn" onClick={() => setPace(r.id)}>{fmtPace(state.paces[r.id])}<span className="muted small">/mi</span></button>
+              <button className="btn" onClick={() => setPace(r.id)}>{state.paceEntered[r.id] ? <>{fmtPace(state.paces[r.id])}<span className="muted small">/mi</span></> : <span className="amber">Set pace</span>}</button>
             </div>
           )
         })}

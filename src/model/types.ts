@@ -77,6 +77,8 @@ export interface RaceState {
   assignments: RunnerId[]
   runnerStatus: Record<RunnerId, RunnerStatus>
   paces: Record<RunnerId, number>
+  /** true once someone has actually entered this runner's pace (otherwise the sheet default is used silently) */
+  paceEntered: Record<RunnerId, boolean>
   /** index 1..36: hand-set expected duration (seconds) or null */
   expect: (number | null)[]
   drivers: (RunnerId | null)[]

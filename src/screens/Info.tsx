@@ -73,7 +73,7 @@ export function Info({ snap, section }: { snap: Snapshot; section?: string }) {
         <span className="k muted">I am</span>
         <select value={settings.iAmRunnerId ?? ''} onChange={e => store.setSettings({ iAmRunnerId: e.target.value || null, iAmPrompted: true })}>
           <option value="">— pick your name —</option>
-          {TEAM.runners.map(r => <option key={r.id} value={r.id}>{r.name} ({fmtPace(state.paces[r.id])}/mi)</option>)}
+          {TEAM.runners.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
         </select>
       </div>
       {(settings.iAmRunnerId === 'Z' || settings.isCaptain) && (

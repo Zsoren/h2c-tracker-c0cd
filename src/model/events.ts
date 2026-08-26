@@ -21,13 +21,15 @@ export function keyOf(e: H2CEvent): string | null {
 
 export function initialState(team: TeamData): RaceState {
   const paces: Record<RunnerId, number> = {}
+  const paceEntered: Record<RunnerId, boolean> = {}
   const runnerStatus: Record<RunnerId, RunnerStatus> = {}
-  for (const r of team.runners) { paces[r.id] = r.paceSec; runnerStatus[r.id] = 'active' }
+  for (const r of team.runners) { paces[r.id] = r.paceSec; paceEntered[r.id] = false; runnerStatus[r.id] = 'active' }
   return {
     actual: Array(N_LEGS + 1).fill(null),
     assignments: [...team.assignments],
     runnerStatus,
     paces,
+    paceEntered,
     expect: Array(N_LEGS + 1).fill(null),
     drivers: Array(N_LEGS + 1).fill(null),
     driveMin: Array(N_LEGS + 1).fill(null),
@@ -100,7 +102,7 @@ export function reduce(team: TeamData, events: H2CEvent[], now?: number): RaceSt
         break
       case 'assignment_set': s.assignments[(p.leg as number) - 1] = p.runnerId as RunnerId; break
       case 'runner_status_set': s.runnerStatus[p.runnerId as RunnerId] = p.status as RunnerStatus; break
-      case 'pace_set': s.paces[p.runnerId as RunnerId] = p.paceSec as number; break
+      case 'pace_set': s.paces[p.runnerId as RunnerId] = p.paceSec as number; s.paceEntered[p.runnerId as RunnerId] = true; break
       case 'leg_expect_set': s.expect[p.leg as number] = (p.durationSec as number | null) ?? null; break
       case 'driver_set': s.drivers[p.leg as number] = (p.runnerId as RunnerId | null) ?? null; break
       case 'drive_min_set': s.driveMin[p.leg as number] = p.minutes as number; break

@@ -72,17 +72,41 @@ export default function App() {
         <Tab id="schedule" label="Schedule" ico="≡" active={route.tab === 'schedule' || route.tab === 'leg'} />
         <Tab id="info" label="Info" ico="ⓘ" active={route.tab === 'info'} />
       </nav>
-      {showIAm && (
-        <Sheet open onClose={() => store.setSettings({ iAmPrompted: true })}>
-          <h2 style={{ fontSize: 26 }}>Which runner are you?</h2>
-          <div className="names">Gives you a personal "You" line on NOW. You can change it under Info.</div>
-          <div className="chips" style={{ flexWrap: 'wrap' }}>
-            {TEAM.runners.map(r => <button key={r.id} className="chip name" onClick={() => store.setSettings({ iAmRunnerId: r.id, iAmPrompted: true })}>{r.short}</button>)}
-          </div>
-          <button className="cancel" onClick={() => store.setSettings({ iAmPrompted: true })}>Skip</button>
-        </Sheet>
-      )}
+      {showIAm && <FirstRun snap={snap} />}
     </div>
+  )
+}
+
+/** First-run: pick your name, then (unless a pace is already on file) enter your planned flat pace. */
+function FirstRun({ snap }: { snap: ReturnType<typeof useRace> }) {
+  const [runner, setRunner] = useState<string | null>(null)
+  const [paceText, setPaceText] = useState('')
+  const done = (id: string | null) => store.setSettings({ iAmRunnerId: id, iAmPrompted: true })
+  const m = /^(\d{1,2}):(\d{2})$/.exec(paceText.trim())
+  const paceSec = m ? +m[1] * 60 + +m[2] : null
+  const valid = paceSec != null && paceSec >= 240 && paceSec <= 1200
+  if (runner === null) {
+    return (
+      <Sheet open onClose={() => done(null)}>
+        <h2 style={{ fontSize: 26 }}>Which runner are you?</h2>
+        <div className="names">Gives you a personal "You" line on NOW. You can change it under Info.</div>
+        <div className="chips" style={{ flexWrap: 'wrap' }}>
+          {TEAM.runners.map(r => <button key={r.id} className="chip name" onClick={() => (snap.state.paceEntered[r.id] ? done(r.id) : setRunner(r.id))}>{r.short}</button>)}
+        </div>
+        <button className="cancel" onClick={() => done(null)}>Skip</button>
+      </Sheet>
+    )
+  }
+  const short = TEAM.runners.find(r => r.id === runner)?.short ?? ''
+  return (
+    <Sheet open onClose={() => done(runner)}>
+      <h2 style={{ fontSize: 26 }}>Hi {short} — what's your planned pace?</h2>
+      <div className="names">Average <b>flat</b> pace in minutes:seconds per mile (e.g. 9:30). It's used to project your four legs; you can change it any time on Home.</div>
+      <div className="timebox"><input type="text" inputMode="numeric" placeholder="9:30" value={paceText} onChange={e => setPaceText(e.target.value)} autoFocus /></div>
+      {paceText && !valid && <div className="muted small">Enter minutes:seconds, e.g. 9:30 (between 4:00 and 20:00).</div>}
+      <button className="confirm" disabled={!valid} onClick={() => { store.dispatch('pace_set', { runnerId: runner, paceSec }); done(runner) }}>SAVE {valid ? paceText.trim() + '/mi' : ''}</button>
+      <button className="cancel" onClick={() => done(runner)}>Skip for now (the captain's estimate will be used)</button>
+    </Sheet>
   )
 }
 

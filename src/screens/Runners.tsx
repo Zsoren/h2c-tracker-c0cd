@@ -26,7 +26,7 @@ export function RunnerDetail({ snap, id }: { snap: Snapshot; id: RunnerId }) {
       <h1 className="title">{r.short} <span className="muted">· {r.name}</span>{r.id === settings.iAmRunnerId ? <span className="tag dim" style={{ marginLeft: 8 }}>YOU</span> : null}{dropped ? <span className="tag warn" style={{ marginLeft: 8 }}>DROPPED</span> : null}</h1>
       <div className="card">
         <div className="kv">
-          <span className="k">Pace</span><span><button className="btn" onClick={() => setPace(true)}>{fmtPace(state.paces[r.id])}/mi · change</button></span>
+          <span className="k">Pace</span><span><button className="btn" onClick={() => setPace(true)}>{state.paceEntered[r.id] ? `${fmtPace(state.paces[r.id])}/mi · change` : <span className="amber">Set pace</span>}</button></span>
           <span className="k">Legs</span><span>{legs.length} · {miles} mi · +{climb} ft climb</span>
         </div>
       </div>
@@ -65,7 +65,8 @@ export function RunnerDetail({ snap, id }: { snap: Snapshot; id: RunnerId }) {
 export function PaceSheet({ snap, runnerId, onClose }: { snap: Snapshot; runnerId: RunnerId; onClose: () => void }) {
   const { state, proj } = snap
   const cur = state.paces[runnerId]
-  const [text, setText] = useState(fmtPace(cur))
+  const entered = state.paceEntered[runnerId]
+  const [text, setText] = useState(entered ? fmtPace(cur) : '')
   let sec = cur
   const m = /^(\d{1,2}):(\d{2})$/.exec(text.trim())
   if (m) sec = +m[1] * 60 + +m[2]
@@ -73,12 +74,12 @@ export function PaceSheet({ snap, runnerId, onClose }: { snap: Snapshot; runnerI
   const remaining = proj.legs.filter(l => l.runnerId === runnerId && l.endKind === 'projected').length
   return (
     <Sheet open onClose={onClose}>
-      <h2 style={{ fontSize: 26 }}>{runnerShort(runnerId)}'s pace</h2>
-      <div className="names">flat pace, min:sec per mile</div>
-      <div className="timebox"><input type="text" inputMode="numeric" value={text} onChange={e => setText(e.target.value)} placeholder="10:00" /></div>
-      <div className="chips">{[-30, -15, 15, 30].map(d => <button key={d} className="chip sm" onClick={() => setText(fmtPace(Math.max(240, sec + d)))}>{d > 0 ? '+' : ''}{d}s</button>)}</div>
+      <h2 style={{ fontSize: 26 }}>{entered ? `${runnerShort(runnerId)}'s pace` : `Set ${runnerShort(runnerId)}'s pace`}</h2>
+      <div className="names">average flat pace, min:sec per mile{entered ? '' : ' — nothing entered yet'}</div>
+      <div className="timebox"><input type="text" inputMode="numeric" value={text} onChange={e => setText(e.target.value)} placeholder="9:30" autoFocus={!entered} /></div>
+      {entered && <div className="chips">{[-30, -15, 15, 30].map(d => <button key={d} className="chip sm" onClick={() => setText(fmtPace(Math.max(240, sec + d)))}>{d > 0 ? '+' : ''}{d}s</button>)}</div>}
       <div className="effect">Changes {remaining} remaining leg{remaining === 1 ? '' : 's'} · finish {fmtClock(proj.finish)} → <b>{fmtClock(alt.finish)}</b></div>
-      <button className="confirm" disabled={!m || sec === cur} onClick={() => { store.dispatch('pace_set', { runnerId, paceSec: sec }); onClose() }}>SAVE {fmtPace(sec)}/mi</button>
+      <button className="confirm" disabled={!m || (entered && sec === cur)} onClick={() => { store.dispatch('pace_set', { runnerId, paceSec: sec }); onClose() }}>SAVE {m ? fmtPace(sec) + '/mi' : ''}</button>
       <button className="cancel" onClick={onClose}>Cancel</button>
     </Sheet>
   )
