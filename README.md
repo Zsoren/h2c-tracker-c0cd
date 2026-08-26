@@ -2,7 +2,7 @@
 
 Offline-first website for a 9-runner, one-van Hood to Coast team: who's running, when the van must leave, projected finish, per-leg info from the official maps, and an append-only shared log that syncs when there's signal.
 
-- **Live:** https://zsoren.github.io/h2c-tracker-c0cd/ (deploys from `main` via GitHub Actions)
+- **Live:** https://h2c.zanesorenson.com/ (custom domain on GitHub Pages; deploys from `main` via GitHub Actions; the old https://zsoren.github.io/h2c-tracker-c0cd/ redirects here)
 - **Plan / design:** the council-reviewed plan (v5) — see `docs/STATUS.md` for current status and `docs/ZANE-SETUP.md` for the owner's setup steps.
 
 ## Develop

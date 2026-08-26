@@ -1,6 +1,6 @@
 # Build status
 
-Live site: https://zsoren.github.io/h2c-tracker-c0cd/ (deploys automatically from `main` via GitHub Actions)
+Live site: **https://h2c.zanesorenson.com/** (custom domain, HTTPS enforced; deploys automatically from `main`; the old github.io URL redirects)
 Plan: `C:\Users\Zane\.claude\plans\i-am-running-hood-synthetic-scroll.md` (council-approved v5)
 
 ## Done (Mon Aug 24, night)
@@ -15,7 +15,8 @@ Plan: `C:\Users\Zane\.claude\plans\i-am-running-hood-synthetic-scroll.md` (counc
 
 ## Tuesday
 - Zane: `docs/ZANE-SETUP.md` (Firebase project + rules; add config as a GitHub secret himself; DNS CNAME; phone check; 3-pin spot check). Kevin confirmed.
-- Me: once the secret exists → rebuild → real two-phone sync test; once DNS is added → custom domain on Pages, BASE_PATH=/, HTTPS; polish from Zane's screenshot.
+- Custom domain live Tue Aug 25 (h2c.zanesorenson.com; Cloudflare proxy had to be set to DNS-only; repo var BASE_PATH=/).
+- Me: once the Firebase secret exists → rebuild → real two-phone sync test; polish from Zane's screenshot.
 
 ## Wednesday evening
 - Airplane-mode + two-phone sync test with Zane (incl. deliberate conflict with captain on). Go/no-go on sync.

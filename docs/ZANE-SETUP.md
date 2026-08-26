@@ -25,11 +25,11 @@ Nothing here needs to be pasted into chat. The one value that matters (the Fireb
 
 1. ✅ CNAME `h2c` → `zsoren.github.io` is added (Aug 25).
 2. **One more click (Cloudflare):** open the DNS page for zanesorenson.com in Cloudflare, find the `h2c` record, and click the **orange cloud** so it turns **grey ("DNS only")**. With the orange proxy on, GitHub can't verify the domain or issue the HTTPS certificate.
-3. Nothing else to do — I'm watching DNS. The moment it shows GitHub's addresses I switch GitHub Pages to `h2c.zanesorenson.com`, rebuild, and turn on HTTPS once the certificate is issued (minutes to an hour). Until then **https://zsoren.github.io/h2c-tracker-c0cd/** keeps working; afterwards it redirects to the new address automatically.
+3. ✅ Done (Aug 25): GitHub Pages now serves **https://h2c.zanesorenson.com/** with HTTPS enforced. The old github.io link redirects there.
 
-## D. Phone check (5 min) — can be done right now with the github.io link
+## D. Phone check (5 min)
 
-1. Open the site in Safari (iPhone) or Chrome (Android). Pick your name when asked.
+1. Open **https://h2c.zanesorenson.com/** in Safari (iPhone) or Chrome (Android). Pick your name when asked.
 2. Tap around: NOW, Schedule, a leg, Runners, Info. Try **START RACE** → confirm → **UNDO**.
 3. Schedule → **Leg 6 → Open in Maps** (should be Sandy High School); same for **Leg 12** (OMSI gravel lot) and **Leg 30** (HWY 202 near Astoria).
 4. Send me a screenshot of NOW and anything that looks off or confusing.
