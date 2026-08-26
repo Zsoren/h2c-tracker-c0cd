@@ -1,6 +1,7 @@
 // Smoke-test the deployed site: loads, service worker registers under the base path, offline reload works.
 // Usage: node scripts/live-check.mjs [url]
 import { chromium } from 'playwright'
+
 const url = process.argv[2] || 'https://h2c.zanesorenson.com/'
 const browser = await chromium.launch()
 const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, timezoneId: 'America/Los_Angeles' })
@@ -8,17 +9,23 @@ const page = await ctx.newPage()
 const out = []
 page.on('pageerror', e => out.push(`PAGE ERROR ${e.message}`))
 page.on('console', m => { if (m.type() === 'error') out.push(`console.error ${m.text().slice(0, 160)}`) })
+
+async function finish(code) {
+  console.log(out.join('\n'))
+  await browser.close()
+  process.exit(code)
+}
+
 try {
   await page.goto(url, { waitUntil: 'load' })
   await page.waitForSelector('.now', { timeout: 20000 })
   out.push('NOW rendered')
 } catch (e) {
-  out.push(`LOAD FAILED: ${String(e.message).split('
-')[0]}`)
-  out.push(`html head: ${(await page.content()).replace(/s+/g, ' ').slice(0, 400)}`)
-  console.log(out.join('
-')); await browser.close(); process.exit(1)
+  out.push(`LOAD FAILED: ${String(e.message).split('\n')[0]}`)
+  out.push(`html: ${(await page.content()).replace(/\s+/g, ' ').slice(0, 400)}`)
+  await finish(1)
 }
+
 await page.waitForFunction(() => navigator.serviceWorker && navigator.serviceWorker.controller != null, null, { timeout: 20000 }).catch(() => out.push('SW did not take control'))
 const reg = await page.evaluate(async () => { const r = await navigator.serviceWorker.getRegistration(); return r ? { scope: r.scope, active: !!r.active } : null })
 out.push(`SW registration: ${JSON.stringify(reg)}`)
@@ -29,5 +36,4 @@ await page.reload({ waitUntil: 'load' }).catch(e => out.push(`offline reload fai
 out.push(`offline reload rendered NOW: ${(await page.$('.now')) != null}`)
 await ctx.setOffline(false)
 await page.screenshot({ path: 'C:/Users/Zane/AppData/Local/Temp/claude/C--Users-Zane-Desktop-h2c-app/201c4a01-dfb8-4ee4-9bd6-cd358f8b77b7/scratchpad/shots/live.png' })
-await browser.close()
-console.log(out.join('\n'))
+await finish(0)
