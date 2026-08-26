@@ -13,6 +13,9 @@ Plan: `C:\Users\Zane\.claude\plans\i-am-running-hood-synthetic-scroll.md` (counc
 - Contrast: axe audit (AA + AAA rules) passes on NOW, handoff sheet, Schedule, Leg detail, Runners, Info. Live-site smoke test passes (SW scope, manifest, offline reload).
 - Sync: Firestore transport (Tue Aug 25 — Supabase project limit hit, switched to the council-approved Firestore design): append-only rules, memory cache only, serverTs cursor, snapshot listener, re-subscribe on foreground/online; dev transport verified between two tabs. Activates when `VITE_TEAM_ID` (variable) and `VITE_FIREBASE_CONFIG` (secret) exist.
 
+## Tue Aug 25 — phone-check feedback applied
+- Tabs: Home · Now · Schedule · Info. Home = roster (Des/Alex/Bre short names, legs, miles, tap-to-edit pace) + start/finish/total; runner detail page replaces the Runners tab. Driver removed. Captain switch only for "Zane". Adjust sheet: leg time + pace side by side. NOW leads with LEG N → Exch N · name. Leg pages: Starts at / Ends at with map links. Big deltas as "2d 7h". Test-race entries from the phone check undone in the shared log.
+
 ## Tuesday
 - Zane: `docs/ZANE-SETUP.md` (Firebase project + rules; add config as a GitHub secret himself; DNS CNAME; phone check; 3-pin spot check). Kevin confirmed.
 - Custom domain live Tue Aug 25 (h2c.zanesorenson.com; Cloudflare proxy had to be set to DNS-only; repo var BASE_PATH=/).
