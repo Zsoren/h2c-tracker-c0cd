@@ -43,15 +43,21 @@ export function Now({ snap }: { snap: Snapshot }) {
   const stale = phase === 'racing' && overdue > 30 * MIN
   const openSheet = (preset: number | null = null) => setSheet({ at: store.now(), preset })
 
-  // LEAVE status: grey "in 13 min" → amber "LEAVE NOW" (last 10 min) → amber "LATE 9 min" (first 10 min) → grey "LATE 23 min"
-  let leaveText = '', leaveAmber = false
+  // LEAVE row, one statement: "LEAVE · by 10:07 AM · in 13 min" → "LEAVE NOW · latest 10:07 AM" (last 10 min)
+  // → "LATE · should have left 10:07 AM · 9 min ago". Amber only around the deadline.
+  let leaveKey = 'LEAVE', leaveText = '', leaveAmber = false
   if (lp) {
-    const deadline = lp.leaveBy === 'now' ? lp.start : (lp.leaveBy as number)
-    const d = deadline - now
-    if (lp.leaveBy === 'now') { leaveText = 'NOW'; leaveAmber = now - lp.start < 10 * MIN }
-    else if (d > 10 * MIN) leaveText = fmtRelative(deadline, now)
-    else if (d > 0) { leaveText = 'LEAVE NOW'; leaveAmber = true }
-    else { leaveText = `LATE ${fmtDuration(-d)}`; leaveAmber = -d < 10 * MIN }
+    if (lp.leaveBy === 'now') {
+      leaveKey = 'LEAVE NOW'
+      leaveText = `from ${n === 1 ? 'Timberline' : `Exch ${n - 1}`} right after the handoff`
+      leaveAmber = now - lp.start < 10 * MIN
+    } else {
+      const deadline = lp.leaveBy as number
+      const d = deadline - now
+      if (d > 10 * MIN) { leaveKey = 'LEAVE'; leaveText = `by ${fmtClock(deadline)} · ${fmtRelative(deadline, now)}` }
+      else if (d > 0) { leaveKey = 'LEAVE NOW'; leaveText = `latest ${fmtClock(deadline)}`; leaveAmber = true }
+      else { leaveKey = 'LATE'; leaveText = `should have left ${fmtClock(deadline)} · ${fmtDuration(-d)} ago`; leaveAmber = -d < 10 * MIN }
+    }
   }
 
   // conflict notes: a handoff another phone logged differently while offline (persistent until dismissed)
@@ -108,9 +114,8 @@ export function Now({ snap }: { snap: Snapshot }) {
       {phase === 'racing' && lp && leg && (
         <div className={'card group' + (leaveAmber ? ' urgent' : '')}>
           <div className="line" onClick={() => go(`leg/${n}`)}>
-            <span className={'k' + (leaveAmber ? ' amber' : '')}>LEAVE</span>
-            <span className="grow ellip">{lp.leaveBy === 'now' ? (n === 1 ? 'Timberline' : `Exch ${n - 1}`) : <>by <b>{fmtClock(lp.leaveBy as number)}</b></>}</span>
-            <span className={'nowrap lstat' + (leaveAmber ? ' amber' : '')}>{leaveText}</span>
+            <span className={'k nowrap' + (leaveAmber ? ' amber' : '')}>{leaveKey}</span>
+            <span className="grow ellip">{leaveText}</span>
             <a className="maps" href={mapsUrl(leg)} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} aria-label={`Directions to ${n === 36 ? 'Seaside' : 'Exch ' + n}`}>Maps ↗</a>
           </div>
           {nextLp && (

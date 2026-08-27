@@ -127,7 +127,7 @@ export function Info({ snap, section }: { snap: Snapshot; section?: string }) {
       <div className="kv">
         <span className="k">Night 6 PM–7 AM</span><span>Vest + headlamp + 2 flashers. Vest until 9 AM.</span>
         <span className="k">Start</span><span>Timberline check-in 1 hr before · gear check · Leg 1: no van support, drive to Exch 1.</span>
-        <span className="k">Van</span><span>One van on course · never trail your runner at night · sign in the window. No van support planned — runners carry their own water.</span>
+        <span className="k">Van</span><span>One van on course · never trail your runner at night · sign in the window.</span>
         <span className="k">Quiet zones</span><span>Engine & lights off · no music, horns or cheering.</span>
         <span className="k">Majors 6·12·18·24·30</span><span>Bathrooms, food, long walk to the chute — leave 15 min early.</span>
         <span className="k">Legs 19–32</span><span>No cell service · 20–21 gravel (bandana) · 28: no stopping at the Elk Preserve.</span>

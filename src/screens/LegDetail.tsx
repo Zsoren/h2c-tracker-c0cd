@@ -43,9 +43,13 @@ export function LegDetail({ snap, n }: { snap: Snapshot; n: number }) {
           <span className="k">LEAVE BY (latest)</span><span>{lp.leaveBy === 'now' ? 'as soon as the handoff is done' : `${fmtClock(lp.leaveBy as number)} (drive ~${lp.driveMin} + walk ${lp.walkMin} min)`}<br /><span className="small muted">Leave when the finisher's in the van — this is the latest, not a plan.</span></span>
         </div>
         <div className="btnrow" style={{ marginTop: 10 }}>
-          <button className="btn" onClick={() => setExpect(true)}>Expected time</button>
+          <button className="btn" onClick={() => setExpect(true)}>Adjust estimate</button>
           <button className="btn" onClick={() => setChangeRunner(true)}>Change runner</button>
-          <button className="btn" disabled={isPre} title={isPre ? 'Race not started' : ''} onClick={() => setHandoff(n)}>Set handoff time{isPre ? ' (race not started)' : ''}</button>
+          <button className="btn" disabled={isPre} title={isPre ? 'Race not started' : ''} onClick={() => setHandoff(n)}>Log actual handoff{isPre ? ' (race not started)' : ''}</button>
+        </div>
+        <div className="muted tiny" style={{ marginTop: 6 }}>
+          <b>Adjust estimate</b> = how long this leg is expected to take (pace or duration) — changes the projection.{' '}
+          <b>Log actual handoff</b> = record the real time the runner came in at Exch {n} — a fact, used to re-anchor everything after it.
         </div>
       </div>
 
