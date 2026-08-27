@@ -19,7 +19,7 @@ export function StatusLine({ snap }: { snap: Snapshot }) {
       {!snap.storageOk && <span className="tag warn">STORAGE OFF</span>}
       {snap.settings.timeOffsetMs !== 0 && <span className="tag warn">TEST CLOCK</span>}
       {caps > 1 && <span className="tag warn">{caps} captain phones</span>}
-      {snap.settings.isCaptain && caps <= 1 && <span className="tag">CAPTAIN</span>}
+      {snap.settings.isCaptain && caps <= 1 && <span className="tag dim">CAPTAIN</span>}
     </div>
   )
 }

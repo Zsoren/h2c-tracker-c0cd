@@ -86,6 +86,10 @@ export function Info({ snap, section }: { snap: Snapshot; section?: string }) {
         </label>
       )}
 
+      <h2 className="sub">Recent changes</h2>
+      <div className="muted small">Newest first, from every phone. Undo reverses one change (the undo itself syncs too).</div>
+      <RecentChanges snap={snap} />
+
       <h2 className="sub">Offline setup</h2>
       <div className="kv">
         <span className="k">Browser</span><span>Open in Safari or Chrome (not inside Instagram/Gmail). Wait for "Ready offline" once.</span>
@@ -102,16 +106,22 @@ export function Info({ snap, section }: { snap: Snapshot; section?: string }) {
       </div>
       <div className="row"><input className="plain" type="text" placeholder="Paste a plan link here" value={paste} onChange={e => setPaste(e.target.value)} /><button className="btn" onClick={pasteLink}>Load</button></div>
 
-      <h2 className="sub">Race settings</h2>
-      <div className="row">
-        <span className="k muted">Planned start</span>
-        <input type="time" step={60} value={toHHMM(state.plannedStart)} onChange={e => { const t = fromHHMM(e.target.value, state.plannedStart); if (t != null) store.dispatch('planned_start_set', { at: t }) }} style={{ minHeight: 44, background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 10, padding: '0 10px', color: 'var(--fg)' }} />
-        <span className="muted small">Fri Aug 28 · {fmtClock(state.plannedStart)}</span>
-      </div>
-      <label className="switch">
-        <span>Hill-adjusted estimates <span className="muted small">— climbs slower, descents faster (labeled "Hill-adj.")</span></span>
-        <input type="checkbox" checked={state.hillAdjust} onChange={e => store.dispatch('settings_set', { hillAdjust: e.target.checked })} />
-      </label>
+      {settings.isCaptain ? (
+        <>
+          <h2 className="sub">Race settings (captain)</h2>
+          <div className="row">
+            <span className="k muted">Planned start</span>
+            <input type="time" step={60} value={toHHMM(state.plannedStart)} onChange={e => { const t = fromHHMM(e.target.value, state.plannedStart); if (t != null && confirm(`Set the planned start to ${fmtClock(t)} on every phone?`)) store.dispatch('planned_start_set', { at: t }) }} style={{ minHeight: 44, background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 10, padding: '0 10px', color: 'var(--fg)' }} />
+            <span className="muted small">Fri Aug 28 · {fmtClock(state.plannedStart)}</span>
+          </div>
+          <label className="switch">
+            <span>Hill-adjusted estimates <span className="muted small">— climbs slower, descents faster (labeled "Hill-adj.")</span></span>
+            <input type="checkbox" checked={state.hillAdjust} onChange={e => { if (confirm(`Turn hill-adjusted estimates ${e.target.checked ? 'on' : 'off'} for every phone?`)) store.dispatch('settings_set', { hillAdjust: e.target.checked }) }} />
+          </label>
+        </>
+      ) : (
+        <div className="muted small" style={{ marginTop: 12 }}>Planned start {fmtClock(state.plannedStart)} · estimates {state.hillAdjust ? 'hill-adjusted' : 'flat'} — the captain's phone can change these.</div>
+      )}
 
       <h2 className="sub">Race essentials</h2>
       <div className="kv">
@@ -128,10 +138,6 @@ export function Info({ snap, section }: { snap: Snapshot; section?: string }) {
 
       <h2 className="sub">Roster</h2>
       <div className="kv">{TEAM.runners.map(r => <><span key={r.id + 'k'} className="k">{r.name}</span><span key={r.id + 'v'}>{r.phone ?? <span className="muted">—</span>}</span></>)}</div>
-
-      <h2 className="sub">Recent changes</h2>
-      <div className="muted small">Newest first, from every phone. Undo reverses one change (the undo itself syncs too).</div>
-      <RecentChanges snap={snap} />
 
       <h2 className="sub">Danger zone</h2>
       <div className="muted small">Clears every logged handoff and swap {sync.mode === 'on' ? 'on THIS phone (the team log is kept; it will reload from the team data)' : 'on this phone'}. Exports a backup first. Type RESET to enable.</div>

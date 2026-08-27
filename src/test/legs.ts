@@ -10,7 +10,7 @@ export const LEGS: Leg[] = (SHEET_LEGS as [number, number, number, number, numbe
     exchangeName: '', address: '', lat: null, lng: null,
     vanSupport: 'yes', vanNote: '', vanRouteNote: '',
     driveMinDefault: Math.ceil((miles / 25) * 60) + 5,
-    walkMinDefault: (MAJOR_EXCHANGES as number[]).includes(n) ? 15 : 10,
+    walkMinDefault: n === 36 ? 25 : n === 29 || n >= 31 ? 20 : (MAJOR_EXCHANGES as number[]).includes(n) ? 15 : 10,
     leaveNow: n === 1,
     pdfUrl: '', videoId: '',
   }),

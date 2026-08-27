@@ -1308,7 +1308,7 @@
   "vanNote": "Cell phone coverage unreliable until after Leg 32.",
   "vanRouteNote": "HIGH CONGESTION EXCHANGE- be prepared! Parking: 1/2 mile from exchange. Drop off next racer while waiting in line near entrance to parking lot (NOT AT THE EXCHANGE). Only next racer allowed to exit vehicle while stopped in waiting line. Then, drive to top end of parking area and wait for your team number to be called. Bib numbers will be called in the parking area once your runner reaches the pickup area. Once called, drive to pickup area. Pull all the way forward, pick up your racer and head to exchange 30. Two way walkie talkies are recommended for teammates to communicate at Exchange 29 (as there is no cell service). Ensure your team vehicle has fueled up in St. Helens, well before reaching this exchange. Provisions: No Closest fire stations located 9.6 miles south of exchange 27 (CC Fire) or 5.5 miles northwest of exchanege 32 (L&C Fire). Lewis & Clark Fire Address: 90216 Logan Rd, Astoria, OR 97103 Clatsop County Fire Address: 42644 Loyd Ln, Seaside, OR 97138",
   "driveMinDefault": 20,
-  "walkMinDefault": 10,
+  "walkMinDefault": 20,
   "pdfUrl": "https://hoodtocoast.com/wp-content/uploads/2026/02/HTC-Leg-29.pdf",
   "videoId": "prnq1ehwCSw",
   "description": "Very challenging up and downhills through winding wooded section of HWY 202.",

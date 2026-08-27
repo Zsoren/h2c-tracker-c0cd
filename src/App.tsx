@@ -72,7 +72,7 @@ export default function App() {
       {route.tab === 'info' && <Info snap={snap} section={route.section} />}
       <nav className="tabbar">
         <Tab id="home" label="Home" ico="⌂" active={route.tab === 'home' || route.tab === 'runner'} />
-        <Tab id="now" label="Now" ico="⏱" active={route.tab === 'now'} />
+        <Tab id="now" label="Now" ico={'⏱︎'} active={route.tab === 'now'} />
         <Tab id="schedule" label="Schedule" ico="≡" active={route.tab === 'schedule' || route.tab === 'leg'} />
         <Tab id="info" label="Info" ico="ⓘ" active={route.tab === 'info'} />
       </nav>

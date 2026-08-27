@@ -52,7 +52,8 @@ const legs = SHEET_LEGS.map(([n, miles, gain, loss, net, difficulty, notes]) => 
   const major = MAJOR_EXCHANGES.includes(n)
   let exchangeName = NAME_FALLBACK[n] || nameFromNextLeg(n) || e.exchangeName || (e.address || '').split(',')[0].replace(/^\(approx\.\)\s*/i, '').trim().slice(0, 48)
   if (n === 36) exchangeName = 'FINISH — Seaside beach (Broadway turnaround)'
-  const walk = n === 36 ? 25 : (n >= 31 ? 20 : major ? 15 : 10)
+  const WALK_OVERRIDE = { 29: 20 }   // official note: HIGH CONGESTION, parking ~½ mile from the exchange
+  const walk = WALK_OVERRIDE[n] ?? (n === 36 ? 25 : (n >= 31 ? 20 : major ? 15 : 10))
   const leg = {
     n, miles, gain, loss, net, difficulty, notes,
     majorExchange: major,

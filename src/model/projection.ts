@@ -59,6 +59,11 @@ export function overlapsWindow(start: number, end: number, winStart: number, win
   return false
 }
 
+/** Badge text for a gear tag. */
+export function gearLabel(g: Gear): string {
+  return g === 'NIGHT' ? 'NIGHT GEAR' : g === 'REFLECTIVE' ? 'VEST' : 'DAY'
+}
+
 export function gearFor(start: number, end: number): Gear {
   if (overlapsWindow(start, end, 18 * 60, 7 * 60)) return 'NIGHT'
   if (overlapsWindow(start, end, 7 * 60, 9 * 60)) return 'REFLECTIVE'
@@ -105,7 +110,9 @@ export function project(team: TeamData, legs: Leg[], s: RaceState): Projection {
     }
     const driveMin = s.driveMin[n] ?? leg.driveMinDefault
     const walkMin = leg.walkMinDefault
-    const leaveBy: number | 'now' = leg.leaveNow ? 'now' : end - (driveMin + walkMin) * 60000
+    let leaveBy: number | 'now' = leg.leaveNow ? 'now' : end - (driveMin + walkMin) * 60000
+    // short legs: if the deadline lands before (or within 3 min of) the leg start, the answer is simply "leave now"
+    if (leaveBy !== 'now' && leaveBy <= start + 3 * 60000) leaveBy = 'now'
     out.push({
       n, runnerId: s.assignments[n - 1], start, end, durationSec: Math.round((end - start) / 1000),
       startKind, endKind, gear: gearFor(start, end), leaveBy, driveMin, walkMin,

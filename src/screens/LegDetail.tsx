@@ -4,7 +4,7 @@ import { useNow } from '../state/hooks'
 import { go } from '../state/router'
 import { fmtClock, fmtDuration, fmtHMS, fmtTimeRel } from '../model/time'
 import { difficultyLabel, mapsUrl } from '../model/helpers'
-import { backToBack, runnerMiles, project } from '../model/projection'
+import { backToBack, runnerMiles, project, gearLabel } from '../model/projection'
 import type { RaceState } from '../model/types'
 import { ExpectSheet } from '../components/ExpectSheet'
 import { HandoffSheet } from '../components/HandoffSheet'
@@ -30,18 +30,17 @@ export function LegDetail({ snap, n }: { snap: Snapshot; n: number }) {
   return (
     <div className="page">
       <button className="back" onClick={() => go('schedule')}>‹ Schedule</button>
-      <h1 className="title">Leg {n} <span className="muted">· {leg.miles} mi · {difficultyLabel(leg.difficulty)}{leg.officialDifficulty ? ` (official: ${leg.officialDifficulty})` : ''}</span></h1>
-      {leg.description && <p className="pre" style={{ marginTop: 0 }}>{leg.description}</p>}
+      <h1 className="title">Leg {n} <span className="muted">· {leg.miles} mi · {difficultyLabel(leg.difficulty)}{leg.officialDifficulty && leg.officialDifficulty.toLowerCase() !== difficultyLabel(leg.difficulty).toLowerCase() ? ` (official: ${leg.officialDifficulty})` : ''}</span></h1>
+      {leg.description && leg.description.length >= 25 && /^[A-Z]/.test(leg.description) && <p className="pre" style={{ marginTop: 0 }}>{leg.description}</p>}
 
       <div className="card" style={{ marginBottom: 10 }}>
         <div className="kv">
           <span className="k">Runner</span><span><b>{runnerShort(lp.runnerId)}</b> {state.runnerStatus[lp.runnerId] === 'dropped' ? '(dropped!)' : ''}</span>
-          <span className="k">Start · {prevEx}</span><span>{fmtTimeRel(lp.start, now)} {lp.startKind === 'actual' ? '✓' : lp.startKind === 'est' ? '(est.)' : ''}</span>
-          <span className="k">Finish · Exch {n}</span><span>{fmtTimeRel(lp.end, now)} {lp.endKind === 'actual' ? '✓' : lp.endKind === 'est' ? '(est.)' : ''}</span>
+          <span className="k">Start · {prevEx}</span><span>{fmtTimeRel(lp.start, now)} {lp.startKind === 'actual' ? '✓' : lp.startKind === 'est' ? 'est.' : ''}</span>
+          <span className="k">Finish · Exch {n}</span><span>{fmtTimeRel(lp.end, now)} {lp.endKind === 'actual' ? '✓' : lp.endKind === 'est' ? 'est.' : ''}</span>
           <span className="k">Expected time</span><span>{fmtHMS(lp.durationSec)}{lp.expectEdited ? ' (edited)' : ''}</span>
-          <span className="k">Gear</span><span className={'badge gear' + (lp.gear === 'NIGHT' ? ' night' : '')}>{lp.gear}</span>
-          <span className="k"></span><span className="small muted">{gearWhy}</span>
-          <span className="k">Van LEAVE BY</span><span>{lp.leaveBy === 'now' ? 'leave immediately' : `${fmtClock(lp.leaveBy as number)} (drive ~${lp.driveMin} + walk ${lp.walkMin} min)`}</span>
+          <span className="k">Gear</span><span><span className={'badge gear' + (lp.gear === 'NIGHT' ? ' night' : '')}>{gearLabel(lp.gear)}</span> <span className="small muted">{gearWhy}</span></span>
+          <span className="k">LEAVE BY (latest)</span><span>{lp.leaveBy === 'now' ? 'as soon as the handoff is done' : `${fmtClock(lp.leaveBy as number)} (drive ~${lp.driveMin} + walk ${lp.walkMin} min)`}<br /><span className="small muted">Leave when the finisher's in the van — this is the latest, not a plan.</span></span>
         </div>
         <div className="btnrow" style={{ marginTop: 10 }}>
           <button className="btn" onClick={() => setExpect(true)}>Expected time</button>
@@ -87,7 +86,7 @@ export function LegDetail({ snap, n }: { snap: Snapshot; n: number }) {
       {leg.runnerDirections && leg.runnerDirections.length > 0 && (
         <><h2 className="sub">Runner directions (official)</h2><p className="pre">{leg.runnerDirections.join('\n')}</p></>
       )}
-      {leg.namedAfter && <div className="muted small">Leg named after {leg.namedAfter}</div>}
+      {leg.namedAfter && /^[A-Z]/.test(leg.namedAfter) && <div className="muted small">Leg named after {leg.namedAfter}</div>}
 
       <h2 className="sub">Note</h2>
       {note == null ? (

@@ -50,10 +50,11 @@ describe('projection matches the sheet', () => {
     expect(h.legs[19].durationSec).toBeGreaterThan(p.legs[19].durationSec)
     expect(h.legs[0].durationSec).toBeLessThan(p.legs[0].durationSec)
   })
-  it('LEAVE BY: leg 1 is now; others = end − drive − walk', () => {
+  it('LEAVE BY: leg 1 is now; others = end − drive − walk; short legs collapse to now', () => {
     expect(p.legs[0].leaveBy).toBe('now')
     const l6 = p.legs[5]
     expect(l6.leaveBy).toBe(l6.end - (l6.driveMin + 15) * MIN)
+    expect(p.legs[31].leaveBy).toBe('now')   // leg 32: 33 min leg, 36 min of drive+walk
   })
 })
 

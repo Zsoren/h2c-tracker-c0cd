@@ -13,6 +13,10 @@ Plan: `C:\Users\Zane\.claude\plans\i-am-running-hood-synthetic-scroll.md` (counc
 - Contrast: axe audit (AA + AAA rules) passes on NOW, handoff sheet, Schedule, Leg detail, Runners, Info. Live-site smoke test passes (SW scope, manifest, offline reload).
 - Sync: Firestore transport (Tue Aug 25 — Supabase project limit hit, switched to the council-approved Firestore design): append-only rules, memory cache only, serverTs cursor, snapshot listener, re-subscribe on foreground/online; dev transport verified between two tabs. Activates when `VITE_TEAM_ID` (variable) and `VITE_FIREBASE_CONFIG` (secret) exist.
 
+## Thu Aug 27 (race eve) — review round applied, CODE FREEZE
+- Zane's phone-check round 2 applied; shared log reset via a new team id (all phones start clean).
+- Three-reviewer UI/UX pass (UX expert, UI expert, relay runner; all "ready"): all P0+P1 items from `docs/UX-REVIEW-PLAN.md` implemented and deployed — pre-race guard, captain-only race settings, LEAVE row states + Maps link, short-leg LEAVE NOW, next-runner warnings, Exch 18/Seaside copy, stale-log copy, pace CTA only on your row, suggestion chip, Recent changes moved up, offline hint, drop-runner spread, copy nits, Tonight card, visual consistency. P2 deferred to after the race.
+
 ## Tue Aug 25 — phone-check feedback applied
 - Tabs: Home · Now · Schedule · Info. Home = roster (Des/Alex/Bre short names, legs, miles, tap-to-edit pace) + start/finish/total; runner detail page replaces the Runners tab. Driver removed. Captain switch only for "Zane". Adjust sheet: leg time + pace side by side. NOW leads with LEG N → Exch N · name. Leg pages: Starts at / Ends at with map links. Big deltas as "2d 7h". Test-race entries from the phone check undone in the shared log.
 

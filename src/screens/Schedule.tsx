@@ -4,6 +4,7 @@ import { useNow } from '../state/hooks'
 import { go } from '../state/router'
 import { fmtClock, fmtTimeRel, localMinutes } from '../model/time'
 import { difficultyLabel } from '../model/helpers'
+import { gearLabel } from '../model/projection'
 
 export function Schedule({ snap }: { snap: Snapshot }) {
   const now = useNow(30000)
@@ -37,15 +38,15 @@ export function Schedule({ snap }: { snap: Snapshot }) {
                 <div>
                   <div className="t">{runnerShort(lp.runnerId)} · {leg.miles} mi · {difficultyLabel(leg.difficulty)}</div>
                   <div className="s">
-                    <span className={'badge gear' + (lp.gear === 'NIGHT' ? ' night' : '')}>{lp.gear}</span>
+                    <span className={'badge gear' + (lp.gear === 'NIGHT' ? ' night' : '')}>{gearLabel(lp.gear)}</span>
                     {leg.majorExchange && <span className="badge">MAJOR EXCH {lp.n}</span>}
                     {leg.vanSupport === 'no' && <span className="badge">NO VAN</span>}
                     {leg.notes.map(x => <span key={x} className="badge">{x.replace('Little/No Shade', 'NO SHADE').replace(' (Poss Dust)', '').toUpperCase()}</span>)}
                   </div>
                 </div>
                 <div className="r">
-                  <div><span className={'dotk ' + lp.startKind} />{fmtClock(lp.start)}</div>
-                  <div><span className={'dotk ' + lp.endKind} />{fmtClock(lp.end)}</div>
+                  <div><span className={'dotk ' + lp.startKind} />{fmtClock(lp.start)}{lp.startKind === 'est' ? <span className="s"> est.</span> : null}</div>
+                  <div><span className={'dotk ' + lp.endKind} />{fmtClock(lp.end)}{lp.endKind === 'est' ? <span className="s"> est.</span> : null}</div>
                   <div className="s">leave {lp.leaveBy === 'now' ? 'now' : fmtClock(lp.leaveBy as number)}</div>
                 </div>
               </button>
