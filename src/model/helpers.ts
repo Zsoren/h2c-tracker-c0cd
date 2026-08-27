@@ -4,12 +4,15 @@ import { TZ } from './time'
 
 export interface Reminder { text: string; key: string }
 
-/** Situational reminders for NOW (most important first). `names` = short names by runner id. */
+/**
+ * Situational reminders for NOW, most important first. Only things that change what the driver does;
+ * ~14 of 36 legs show one, the rest show nothing. `names` = short names by runner id.
+ */
 export function reminders(legs: Leg[], proj: Projection, now: number, names: Record<string, string> = {}): Reminder[] {
   const out: Reminder[] = []
   if (proj.phase === 'pre') {
     out.push({ key: 'checkin', text: 'Check-in 1 hr before start — gear check' })
-    out.push({ key: 'leg1', text: 'Leg 1: night gear · no van support' })
+    out.push({ key: 'leg1', text: 'Leg 1: night gear · van drives straight to Exch 1' })
     return out
   }
   if (proj.phase === 'finished') { out.push({ key: 'done', text: 'Awards 5:15 PM main stage · course closes 9 PM' }); return out }
@@ -17,30 +20,16 @@ export function reminders(legs: Leg[], proj: Projection, now: number, names: Rec
   const leg = legs[n - 1]
   const lp = proj.legs[n - 1]
   const next = legs[n] ?? null
-  // stale log: nothing logged for a long time → the one thing to do
   if (now > lp.end + 30 * 60000) out.push({ key: 'stale', text: `Nothing logged since ${clock(lp.start)} — LOG HANDOFF, pick the exchange` })
-  // where the van goes
-  if (n === 36) out.push({ key: 'novan', text: 'Van → Seaside shuttle lot, walk to beach' })
-  else if (leg.vanSupport === 'no') out.push({ key: 'novan', text: `No van support — drive to Exch ${n}` })
-  // the runner about to go out
-  if (next) {
-    const water = next.vanSupport !== 'yes' || /water/i.test(next.vanNote)
-    if (next.vanSupport === 'no' || /water/i.test(next.vanNote)) out.push({ key: 'nextwater', text: `Leg ${n + 1} runner: carry water — no van` })
-    else if (water && next.vanSupport === 'restricted') out.push({ key: 'nextvan', text: `Leg ${n + 1} runner: van rules — carry water` })
-    if (next.notes.some(x => /gravel/i.test(x))) out.push({ key: 'nextgravel', text: `Leg ${n + 1} runner: gravel — bandana` })
+  if (n === 18) out.push({ key: 'cell', text: "Cell dies after Exch 18 — log on captain's phone" })
+  if (n >= 33 && n <= 35) out.push({ key: 'sign', text: 'Colored HTC sign in windshield — legs 33–35' })
+  if (n === 36) {
+    out.push({ key: 'lot', text: 'Van → Seaside shuttle lot, walk to the beach' })
+    out.push({ key: 'meet', text: `Meet ${names[lp.runnerId] ?? 'the runner'} before the chute — run in together` })
   }
-  if (n === 18) out.push({ key: 'cell', text: "Cell dies after Exch 18 — captain's phone logs" })
-  if (n === 19) out.push({ key: 'sign', text: 'Van sign up for legs 19–23' })
-  if (n === 36) out.push({ key: 'seaside', text: `Meet ${names[lp.runnerId] ?? 'the runner'} before the chute — run in together` })
-  if (leg.vanSupport === 'restricted' && n !== 36) out.push({ key: 'vanrules', text: `Van rules on this leg — see Leg ${n}` })
-  if (lp.gear === 'NIGHT') out.push({ key: 'night', text: "Night: don't trail the runner" })
-  if (leg.notes.some(x => /quiet/i.test(x))) out.push({ key: 'quiet', text: 'Quiet zone: engine & lights off' })
-  if (leg.majorExchange) out.push({ key: 'major', text: 'Major exch: long walk, leave early' })
-  const prev = legs[n - 2]
-  if (prev?.majorExchange && now - lp.start < 15 * 60000) out.push({ key: 'finisher', text: 'Finisher: go straight to van lot' })
-  if (n >= 31 && n < 36) out.push({ key: 'seaside', text: 'Seaside traffic — drop runner early' })
-  if (leg.notes.some(x => /gravel/i.test(x))) out.push({ key: 'gravel', text: 'Gravel / dust — bandana helps' })
-  if (leg.notes.some(x => /shade/i.test(x)) && lp.gear === 'DAY') out.push({ key: 'shade', text: 'Little/no shade — water & hat' })
+  if (leg.notes.some(x => /quiet/i.test(x))) out.push({ key: 'quiet', text: `Quiet zone at Exch ${n} — engine & lights off` })
+  if (leg.majorExchange) out.push({ key: 'major', text: `Exch ${n} is a major — long walk to the chute, go early` })
+  if (next && next.notes.some(x => /gravel/i.test(x))) out.push({ key: 'nextgravel', text: `Leg ${n + 1} runner: gravel & dust — bandana` })
   return out
 }
 

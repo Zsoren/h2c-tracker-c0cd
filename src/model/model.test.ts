@@ -7,7 +7,7 @@ import { project, validateHandoff, suggestReplacement, backToBack, legDurationSe
 import { parseHMS, fmtHMS, localMinutes, fmtDelta } from './time'
 import { defaultLeg, skipInfo, showIJustFinished, currentLegOf, mismatchWarning } from './sheet'
 
-const T = teamJson as TeamData
+const T: TeamData = { ...(teamJson as TeamData), hillAdjust: false }   // tests reason about the flat sheet; production defaults to hills on
 const START = Date.parse(T.plannedStart)
 const MIN = 60000
 const H = 60 * MIN
@@ -43,6 +43,14 @@ describe('projection matches the sheet', () => {
     expect(g.slice(0, 4)).toEqual(['NIGHT', 'NIGHT', 'NIGHT', 'NIGHT'])
     expect(g.slice(4, 6)).toEqual(['REFLECTIVE', 'REFLECTIVE'])
     expect(g[6]).toBe('DAY'); expect(g[8]).toBe('DAY'); expect(g[15]).toBe('NIGHT'); expect(g[35]).toBe('DAY')
+  })
+  it('production default is hills-on and pre-race delta is 0 either way', () => {
+    const prod = initialState(teamJson as TeamData)
+    expect(prod.hillAdjust).toBe(true)
+    const hp = project(teamJson as TeamData, LEGS, prod)
+    expect(hp.deltaSec).toBe(0); expect(hp.finish).toBeLessThan(p.finish)
+    const s2 = reduce(T, [ev('pace_set', { runnerId: 'Z', paceSec: 540 }, { ts: 1 })])
+    expect(project(T, LEGS, s2).deltaSec).toBe(0)   // a pace change is a plan change, not a deviation
   })
   it('hills toggle: climbs slower, descents faster, labeled per leg', () => {
     const s = initialState(T); s.hillAdjust = true

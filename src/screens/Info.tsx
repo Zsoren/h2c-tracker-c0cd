@@ -127,13 +127,13 @@ export function Info({ snap, section }: { snap: Snapshot; section?: string }) {
       <div className="kv">
         <span className="k">Night 6 PM–7 AM</span><span>Vest + headlamp + 2 flashers. Vest until 9 AM.</span>
         <span className="k">Start</span><span>Timberline check-in 1 hr before · gear check · Leg 1: no van support, drive to Exch 1.</span>
-        <span className="k">Van</span><span>One van on course · never trail your runner at night · sign in the window.</span>
+        <span className="k">Van</span><span>One van on course · never trail your runner at night · sign in the window. No van support planned — runners carry their own water.</span>
         <span className="k">Quiet zones</span><span>Engine & lights off · no music, horns or cheering.</span>
         <span className="k">Majors 6·12·18·24·30</span><span>Bathrooms, food, long walk to the chute — leave 15 min early.</span>
         <span className="k">Legs 19–32</span><span>No cell service · 20–21 gravel (bandana) · 28: no stopping at the Elk Preserve.</span>
         <span className="k">Seaside 31–36</span><span>Traffic — drop the next runner early · Leg 36 runner wears the chip bib · van → shuttle parking · run in together.</span>
         <span className="k">Course closes</span><span>9 PM Sat. If a marshal says leapfrog, do it.</span>
-        <span className="k">Emergency</span><span>911, then race HQ.</span>
+        <span className="k">Emergency</span><span>911 first, then the Exchange Leader or Radio Operator at the nearest exchange (they reach the Race Command Center). Race office: <a href="tel:+15032924626">(503) 292-4626</a>.</span>
       </div>
 
       <h2 className="sub">Roster</h2>

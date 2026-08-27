@@ -48,6 +48,8 @@ export interface TeamData {
   runners: Runner[]
   assignments: RunnerId[]
   sun: { sunrise: string; sunset: string }
+  /** default for the hills toggle (can still be changed by the captain) */
+  hillAdjust?: boolean
 }
 
 export type Role = 'captain' | 'member'

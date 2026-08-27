@@ -40,7 +40,6 @@ export function Schedule({ snap }: { snap: Snapshot }) {
                   <div className="s">
                     <span className={'badge gear' + (lp.gear === 'NIGHT' ? ' night' : '')}>{gearLabel(lp.gear)}</span>
                     {leg.majorExchange && <span className="badge">MAJOR EXCH {lp.n}</span>}
-                    {leg.vanSupport === 'no' && <span className="badge">NO VAN</span>}
                     {leg.notes.map(x => <span key={x} className="badge">{x.replace('Little/No Shade', 'NO SHADE').replace(' (Poss Dust)', '').toUpperCase()}</span>)}
                   </div>
                 </div>

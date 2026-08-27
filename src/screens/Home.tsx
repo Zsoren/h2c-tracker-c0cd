@@ -38,12 +38,11 @@ export function Home({ snap }: { snap: Snapshot }) {
         <div className="kv">
           <span className="k">Start</span><span>{fmtTimeRel(start, now)} {state.actual[0] !== null ? '(actual)' : '(planned, Timberline)'}</span>
           <span className="k">Expected finish</span><span><b>{fmtTimeRel(proj.finish, now)}</b> · {fmtDelta(proj.deltaSec)}</span>
-          <span className="k">Total time</span><span>{fmtDuration(proj.finish - start)} · {totalMiles} mi · 36 legs{state.hillAdjust ? ' · Hill-adj.' : ''}</span>
+          <span className="k">Total time</span><span>{fmtDuration(proj.finish - start)} · {totalMiles} mi · 36 legs</span>
           {proj.phase === 'pre' && <><span className="k">Countdown</span><span>{fmtRelative(state.plannedStart, now).replace(/^in /, '')} to go</span></>}
           {cur && <><span className="k">Right now</span><span>Leg {cur.n} · {TEAM.runners.find(r => r.id === cur.runnerId)?.short} · Exch {cur.n} at {fmtClock(cur.end)}</span></>}
           {proj.phase === 'finished' && <><span className="k">Result</span><span>FINISHED {fmtTimeRel(proj.finish, now)}</span></>}
         </div>
-        {proj.phase !== 'pre' && <div className="btnrow" style={{ marginBottom: 0 }}><button className="btn primary" onClick={() => go('now')}>Open NOW ›</button></div>}
       </div>
 
       <h2 className="sub">Roster</h2>

@@ -78,8 +78,12 @@ export function LegDetail({ snap, n }: { snap: Snapshot; n: number }) {
       </div>
       <div className="muted tiny" style={{ marginTop: -4, marginBottom: 6 }}>GPX: the route from the official H2C Strava map, cut at the exchange pins (simplified). Open it in Strava / Garmin / Gaia; the PDF is the authority.</div>
 
-      <h2 className="sub">Van · {leg.vanSupport === 'no' ? 'NO VAN SUPPORT' : leg.vanSupport === 'restricted' ? 'RESTRICTED' : 'van support OK'}</h2>
-      {leg.vanNote && <div className={leg.vanSupport === 'no' ? 'warn' : 'note'}>{leg.vanNote}</div>}
+      {leg.vanNote && (
+        <>
+          <h2 className="sub">Van rules (official)</h2>
+          <div className={leg.vanSupport === 'no' ? 'warn' : 'note'}>{leg.vanNote}</div>
+        </>
+      )}
       {leg.vanRouteNote && <><div className="muted small">Exchange notes (official)</div><p className="pre">{leg.vanRouteNote}</p></>}
       {leg.vanDirections && leg.vanDirections.length > 0 && <><div className="muted small">{leg.vanDirections.length ? 'Van route (official)' : ''}</div><p className="pre">{leg.vanDirections.join('\n')}</p></>}
 

@@ -107,5 +107,6 @@
   "sun": {
     "sunrise": "06:25",
     "sunset": "19:55"
-  }
+  },
+  "hillAdjust": true
 }

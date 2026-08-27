@@ -35,7 +35,7 @@ export function initialState(team: TeamData): RaceState {
     driveMin: Array(N_LEGS + 1).fill(null),
     notes: Array(N_LEGS + 1).fill(''),
     plannedStart: Date.parse(team.plannedStart),
-    hillAdjust: false,
+    hillAdjust: team.hillAdjust ?? false,
     alternates: {},
     captainDevices: [],
     lastHandoffTs: null,

@@ -39,7 +39,7 @@ export function RunnerDetail({ snap, id }: { snap: Snapshot; id: RunnerId }) {
               <div className="n">{l.n}</div>
               <div>
                 <div className="t">{L.miles} mi · {fmtHMS(l.durationSec)}{l.expectEdited ? ' (edited)' : ''}{l.endKind === 'actual' && l.startKind === 'actual' ? ` · ran ${fmtPace(l.durationSec / L.miles)}/mi` : l.endKind === 'est' ? ' · est.' : ''}</div>
-                <div className="s"><span className={'badge gear' + (l.gear === 'NIGHT' ? ' night' : '')}>{gearLabel(l.gear)}</span>{L.vanSupport === 'no' && <span className="badge">NO VAN</span>}{L.notes.map(x => <span key={x} className="badge">{x.replace('Little/No Shade', 'NO SHADE').replace(' (Poss Dust)', '').toUpperCase()}</span>)}</div>
+                <div className="s"><span className={'badge gear' + (l.gear === 'NIGHT' ? ' night' : '')}>{gearLabel(l.gear)}</span>{L.notes.map(x => <span key={x} className="badge">{x.replace('Little/No Shade', 'NO SHADE').replace(' (Poss Dust)', '').toUpperCase()}</span>)}</div>
               </div>
               <div className="r"><div>{fmtTimeRel(l.start, now)}{l.startKind === 'est' ? ' est.' : ''}</div><div>→ {fmtClock(l.end)}{l.endKind === 'est' ? ' est.' : ''}</div></div>
             </button>

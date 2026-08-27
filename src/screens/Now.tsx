@@ -36,7 +36,6 @@ export function Now({ snap }: { snap: Snapshot }) {
   const lp = phase === 'racing' ? proj.legs[n - 1] : null
   const leg = lp ? LEGS[n - 1] : null
   const nextLp = phase === 'racing' && n + 1 <= N_LEGS ? proj.legs[n] : null
-  const deckLp = phase === 'racing' && n + 2 <= N_LEGS ? proj.legs[n + 1] : null
   const me = settings.iAmRunnerId
   const myNext = me ? proj.legs.find(l => l.runnerId === me && l.n >= Math.max(1, n)) ?? null : null
   const iJust = showIJustFinished(proj, state, me)
@@ -44,7 +43,7 @@ export function Now({ snap }: { snap: Snapshot }) {
   const stale = phase === 'racing' && overdue > 30 * MIN
   const openSheet = (preset: number | null = null) => setSheet({ at: store.now(), preset })
 
-  // LEAVE row status: grey "in 13 min" → amber "LEAVE NOW" (last 10 min) → amber "LATE 9 min" (first 10 min) → grey "LATE 23 min"
+  // LEAVE status: grey "in 13 min" → amber "LEAVE NOW" (last 10 min) → amber "LATE 9 min" (first 10 min) → grey "LATE 23 min"
   let leaveText = '', leaveAmber = false
   if (lp) {
     const deadline = lp.leaveBy === 'now' ? lp.start : (lp.leaveBy as number)
@@ -73,13 +72,13 @@ export function Now({ snap }: { snap: Snapshot }) {
     <div className="now">
       <StatusLine snap={snap} />
 
-      {/* 2. Running */}
+      {/* Running card */}
       {phase === 'pre' && (
         <div className="card running">
           <div className="lhead" onClick={() => go('leg/1')}><span className="legtag">LEG 1</span><span className="grow ellip">Timberline → Exch 1 · {LEGS[0].exchangeName}</span><span className="chev">›</span></div>
           <div className="who">{runnerShort(state.assignments[0])} · {LEGS[0].miles} mi · {gearLabel(proj.legs[0].gear)}</div>
           <div className="eta">{fmtRelative(state.plannedStart, now).replace(/^in /, '')}<span className="adj">to start</span></div>
-          <div className="sub">Race starts {fmtTimeRel(state.plannedStart, now)}{LEGS[0].vanSupport === 'no' ? ' · no van support on Leg 1' : ''}</div>
+          <div className="sub">Race starts {fmtTimeRel(state.plannedStart, now)}</div>
         </div>
       )}
       {phase === 'racing' && lp && leg && (
@@ -94,7 +93,6 @@ export function Now({ snap }: { snap: Snapshot }) {
               : overdue > 0 ? `was due at Exch ${n} ${fmtRelative(lp.end, now)} — log the handoff when they're in`
               : `arrives at Exch ${n} ${fmtRelative(lp.end, now)}`}{!stale && lp.expectEdited ? ' · (edited)' : ''}
           </div>
-          <div className="sub finmini" style={{ display: 'none' }}>Finish {fmtTimeRel(proj.finish, now)} · {fmtDelta(proj.deltaSec)}</div>
         </div>
       )}
       {phase === 'finished' && (
@@ -106,36 +104,29 @@ export function Now({ snap }: { snap: Snapshot }) {
         </div>
       )}
 
-      {/* 3. LEAVE BY */}
+      {/* Up next: LEAVE + NEXT in one card */}
       {phase === 'racing' && lp && leg && (
-        <div className={'line' + (leaveAmber ? ' late' : '')} onClick={() => go(`leg/${n}`)}>
-          <span className="k">LEAVE</span>
-          <span className="grow ellip">{lp.leaveBy === 'now' ? (n === 1 ? 'Timberline' : `Exch ${n - 1}`) : <>by <b>{fmtClock(lp.leaveBy as number)}</b></>}</span>
-          <span className="nowrap">{leaveText}</span>
-          <a className="maps" href={mapsUrl(leg)} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} aria-label={`Directions to ${n === 36 ? 'Seaside' : 'Exch ' + n}`}>Maps ↗</a>
+        <div className={'card group' + (leaveAmber ? ' urgent' : '')}>
+          <div className="line" onClick={() => go(`leg/${n}`)}>
+            <span className={'k' + (leaveAmber ? ' amber' : '')}>LEAVE</span>
+            <span className="grow ellip">{lp.leaveBy === 'now' ? (n === 1 ? 'Timberline' : `Exch ${n - 1}`) : <>by <b>{fmtClock(lp.leaveBy as number)}</b></>}</span>
+            <span className={'nowrap lstat' + (leaveAmber ? ' amber' : '')}>{leaveText}</span>
+            <a className="maps" href={mapsUrl(leg)} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} aria-label={`Directions to ${n === 36 ? 'Seaside' : 'Exch ' + n}`}>Maps ↗</a>
+          </div>
+          {nextLp && (
+            <div className="line" onClick={() => go(`leg/${n + 1}`)}>
+              <span className="k">NEXT</span>
+              <span className="grow ellip"><b>Leg {n + 1}</b> · {runnerShort(nextLp.runnerId)} · {LEGS[n].miles} mi</span>
+              <span className={'badge gear' + (nextLp.gear === 'NIGHT' ? ' night' : '')}>{gearLabel(nextLp.gear)}</span>
+            </div>
+          )}
         </div>
       )}
 
-      {/* 4. Next */}
-      {phase === 'racing' && nextLp && (
-        <div className="line" onClick={() => go(`leg/${n + 1}`)}>
-          <span className="k">NEXT</span>
-          <span className="grow ellip"><b>Leg {n + 1}</b> · {runnerShort(nextLp.runnerId)} · {LEGS[n].miles} mi</span>
-          <span className={'badge gear' + (nextLp.gear === 'NIGHT' ? ' night' : '')}>{gearLabel(nextLp.gear)}</span>
-        </div>
-      )}
+      {/* spare height lands here on tall phones */}
+      <div className="spacer" />
 
-      {/* 5. On deck */}
-      {phase === 'racing' && deckLp && (
-        <div className="line small ondeck" onClick={() => go(`leg/${n + 2}`)}><span className="k">On deck</span><span className="grow ellip">Leg {n + 2} · {runnerShort(deckLp.runnerId)}{deckLp.start > now ? ` · ${fmtRelative(deckLp.start, now)}` : ''}</span></div>
-      )}
-
-      {/* 6. Finish */}
-      {phase !== 'finished' && (
-        <div className="line finishline" onClick={() => go('home')}><span className="k">Finish</span><span className="grow ellip"><b>{fmtTimeRel(proj.finish, now)}</b></span><span className="nowrap">{fmtDelta(proj.deltaSec)}</span></div>
-      )}
-
-      {/* 7. You */}
+      {/* Quiet facts: you, team finish */}
       {me && phase !== 'finished' && (
         <div className="line small you">
           <span className="k">You</span>
@@ -145,8 +136,11 @@ export function Now({ snap }: { snap: Snapshot }) {
           {iJust != null && <button className="link" onClick={() => openSheet(iJust)}>I just finished</button>}
         </div>
       )}
+      {phase !== 'finished' && (
+        <div className="line small finishline" onClick={() => go('home')}><span className="k">Team finish</span><span className="grow ellip"><b>{fmtTimeRel(proj.finish, now)}</b> · {fmtDelta(proj.deltaSec)}</span></div>
+      )}
 
-      {/* 8. Reminders */}
+      {/* Reminders */}
       <div className="rem">
         {conflict && (
           <div className="remline warn rem1" onClick={() => setConflictOpen(true)}>
@@ -156,7 +150,7 @@ export function Now({ snap }: { snap: Snapshot }) {
           </div>
         )}
         {snap.flags.notice && snap.flags.notice.until > Date.now() && <div className="remline warn rem1">↓ {snap.flags.notice.text}</div>}
-        {rems.map((r, i) => <div key={r.key} className={'remline rem' + (i + (conflict ? 2 : 1)) + (r.key === 'novan' || r.key === 'stale' ? ' warn' : '')}>{r.text}</div>)}
+        {rems.map((r, i) => <div key={r.key} className={'remline rem' + (i + (conflict ? 2 : 1)) + (r.key === 'stale' ? ' warn' : '')}>{r.text}</div>)}
       </div>
       {conflict && conflictOpen && (
         <Sheet open onClose={() => setConflictOpen(false)}>
@@ -167,7 +161,7 @@ export function Now({ snap }: { snap: Snapshot }) {
         </Sheet>
       )}
 
-      {/* 9. Button / toast */}
+      {/* Button / toast */}
       {toast ? (
         <div className="toast"><span>{toast.text}</span><button onClick={undo}>UNDO</button></div>
       ) : phase === 'pre' ? (

@@ -70,7 +70,7 @@ export function gearFor(start: number, end: number): Gear {
   return 'DAY'
 }
 
-export function project(team: TeamData, legs: Leg[], s: RaceState): Projection {
+export function project(_team: TeamData, legs: Leg[], s: RaceState): Projection {
   const dur: number[] = Array(N_LEGS + 1).fill(0)
   for (const leg of legs) {
     const pace = s.paces[s.assignments[leg.n - 1]] ?? 600
@@ -120,12 +120,13 @@ export function project(team: TeamData, legs: Leg[], s: RaceState): Projection {
     })
     prevEnd = end; prevKind = endKind
   }
-  // --- baseline plan (original sheet: default paces, default assignments, flat)
-  const planStart = Date.parse(team.plannedStart)
-  let planFinish = planStart
+  // --- baseline plan: the same projection with nothing logged and no mid-race adjustments
+  // (current paces, assignments and hills setting, from the planned start). Pre-race the delta is therefore 0;
+  // during the race it measures real handoffs + hand-set expected times against the plan.
+  let planFinish = s.plannedStart
   for (const leg of legs) {
-    const r = team.runners.find(x => x.id === team.assignments[leg.n - 1])!
-    planFinish += legDurationSec(leg, r.paceSec, false) * 1000
+    const pace = s.paces[s.assignments[leg.n - 1]] ?? 600
+    planFinish += legDurationSec(leg, pace, s.hillAdjust) * 1000
   }
   let maxLogged = -1
   for (let i = 0; i <= N_LEGS; i++) if (s.actual[i] !== null) maxLogged = i
