@@ -18,14 +18,14 @@ export function Home({ snap }: { snap: Snapshot }) {
 
   return (
     <div className="page">
-      <h1 className="title">{TEAM.teamName}</h1>
-      <div className="muted small" style={{ marginTop: -6, marginBottom: 10 }}>Hood to Coast · Fri–Sat Aug 28–29, 2026 · {totalMiles} mi · 36 legs · {TEAM.runners.length} runners · one van</div>
+      <h1 className="title">Hood to Coast</h1>
+      <div className="muted" style={{ marginTop: -6, marginBottom: 10 }}>{TEAM.teamName}</div>
 
       <div className="card">
         <div className="kv">
           <span className="k">Start</span><span>{fmtTimeRel(start, now)} {state.actual[0] !== null ? '(actual)' : '(planned, Timberline)'}</span>
           <span className="k">Expected finish</span><span><b>{fmtTimeRel(proj.finish, now)}</b> · {fmtDelta(proj.deltaSec)}</span>
-          <span className="k">Total time</span><span>{fmtDuration(proj.finish - start)}{state.hillAdjust ? ' · Hill-adj.' : ''}</span>
+          <span className="k">Total time</span><span>{fmtDuration(proj.finish - start)} · {totalMiles} mi · 36 legs{state.hillAdjust ? ' · Hill-adj.' : ''}</span>
           {proj.phase === 'pre' && <><span className="k">Countdown</span><span>{fmtRelative(state.plannedStart, now).replace(/^in /, '')} to go</span></>}
           {cur && <><span className="k">Right now</span><span>Leg {cur.n} · {TEAM.runners.find(r => r.id === cur.runnerId)?.short} · Exch {cur.n} at {fmtClock(cur.end)}</span></>}
           {proj.phase === 'finished' && <><span className="k">Result</span><span>FINISHED {fmtTimeRel(proj.finish, now)}</span></>}
@@ -34,7 +34,6 @@ export function Home({ snap }: { snap: Snapshot }) {
       </div>
 
       <h2 className="sub">Roster · tap a name for their legs · tap a pace to set it</h2>
-      {TEAM.runners.some(r => !state.paceEntered[r.id]) && <div className="muted small" style={{ marginBottom: 8 }}>"Set pace" = nobody has entered that runner's pace yet; the captain's estimate is used quietly until they do.</div>}
       <div className="list">
         {TEAM.runners.map(r => {
           const legs = LEGS.filter(l => state.assignments[l.n - 1] === r.id).map(l => l.n)

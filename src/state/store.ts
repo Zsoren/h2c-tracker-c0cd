@@ -3,7 +3,7 @@ import legsJson from '../data/legs.json'
 import type { H2CEvent, Leg, RaceState, RunnerId, TeamData } from '../model/types'
 import { makeEvent, newId, reduce } from '../model/events'
 import { project, type Projection } from '../model/projection'
-import { loadJSON, saveJSON, storageOk } from './storage'
+import { loadJSON, removeKey, saveJSON, storageOk } from './storage'
 
 export const TEAM = teamJson as TeamData
 export const LEGS = legsJson as Leg[]
@@ -17,6 +17,8 @@ export interface Settings {
   timeOffsetMs: number
   /** ids of conflict-loser events the user chose to keep dismissed */
   dismissedAlts: string[]
+  /** team id this phone's log belongs to; a new build with a different id wipes the local log (clean slate) */
+  teamId: string
 }
 
 export type SyncMode = 'off' | 'on'
@@ -62,8 +64,15 @@ class RaceStore {
 
   constructor() {
     this.events = loadJSON<H2CEvent[]>(EVENTS_KEY, [])
-    const def: Settings = { deviceId: newId(), iAmRunnerId: null, isCaptain: false, iAmPrompted: false, bannerDismissed: false, timeOffsetMs: 0, dismissedAlts: [] }
+    const def: Settings = { deviceId: newId(), iAmRunnerId: null, isCaptain: false, iAmPrompted: false, bannerDismissed: false, timeOffsetMs: 0, dismissedAlts: [], teamId: '' }
     this.settings = { ...def, ...loadJSON<Partial<Settings>>(SETTINGS_KEY, {}) }
+    // Clean slate when the build's team id changes (used once before the race to drop all test entries).
+    const builtTeam = (import.meta.env.VITE_TEAM_ID as string | undefined) ?? ''
+    if (this.settings.teamId !== builtTeam) {
+      this.events = []
+      removeKey(EVENTS_KEY); removeKey('h2c:synced:v1'); removeKey('h2c:cursor:v1')
+      this.settings = { ...this.settings, teamId: builtTeam, dismissedAlts: [], timeOffsetMs: 0 }
+    }
     saveJSON(SETTINGS_KEY, this.settings)
     this.recompute()
     if (typeof window !== 'undefined') {

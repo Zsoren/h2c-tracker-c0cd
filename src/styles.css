@@ -93,6 +93,23 @@ h1, h2, h3 { margin: 0; font-weight: 800; }
 .toast { width: 100%; min-height: 72px; border-radius: 16px; background: var(--card2); display: flex; align-items: center; justify-content: space-between; padding: 0 14px; gap: 10px; }
 .toast button { background: var(--amber); color: var(--amber-fg); border: 0; border-radius: 12px; font-weight: 900; padding: 10px 18px; min-height: 44px; }
 
+/* breathe on taller phones: more spacing, bigger rows */
+@media (min-height: 700px) {
+  .now { gap: 12px; padding-left: 14px; padding-right: 14px; }
+  .now .rem { gap: 6px; }
+  .running { padding: 14px 14px; }
+  .running .eta { font-size: 56px; }
+  .running .who { font-size: 21px; }
+  .line { padding: 12px 14px; font-size: 18px; }
+  .line.small { padding: 6px 14px; font-size: 16px; }
+}
+@media (min-height: 800px) {
+  .now { gap: 16px; }
+  .now .rem { gap: 8px; }
+  .running .eta { font-size: 62px; }
+  .line { padding: 14px 16px; }
+  .remline { padding: 8px 12px; font-size: 15px; }
+}
 /* overflow drop order for short viewports */
 @media (max-height: 600px) { .now .rem .rem2 { display: none; } }
 @media (max-height: 565px) { .now .you { display: none; } }
@@ -148,8 +165,9 @@ h1, h2, h3 { margin: 0; font-weight: 800; }
 .btn.primary { background: var(--amber); color: var(--amber-fg); }
 .btn.wide { width: 100%; }
 .btnrow { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
-.kv { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; font-size: 16px; }
-.kv .k { color: var(--fg2); }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 10px 14px; font-size: 16px; align-items: baseline; }
+.kv .k { color: var(--fg2); white-space: nowrap; }
+.kv > span:not(.k) { min-width: 0; overflow-wrap: anywhere; }
 .banner { background: var(--card2); border-radius: 12px; padding: 10px 12px; margin-bottom: 10px; font-size: 15px; display: flex; gap: 10px; align-items: center; }
 .banner.red { background: #4a1010; }
 .banner button { background: var(--amber); color: var(--amber-fg); border: 0; border-radius: 10px; font-weight: 800; padding: 8px 12px; min-height: 40px; }

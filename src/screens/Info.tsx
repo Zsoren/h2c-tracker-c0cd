@@ -87,12 +87,11 @@ export function Info({ snap, section }: { snap: Snapshot; section?: string }) {
       )}
 
       <h2 className="sub">Offline setup</h2>
-      <div className="pre">
-        {`1. Open this site in Safari or Chrome — not inside Instagram's or Gmail's built-in browser (those don't keep the offline copy).
-2. Wait for the "Ready offline" chip once. After that it opens with no signal.
-3. Recommended on iPhone: Share → "Add to Home Screen", then open it once from the icon while you have signal. (The icon copy is separate from the Safari copy — set "I am" again there.)
-4. Download the offline Google Maps area for Mt Hood → Portland → Seaside: Google Maps → profile → Offline maps → Select your own map.
-5. No bars in the van? Log handoffs on the captain's phone only; everyone else just looks.`}
+      <div className="kv">
+        <span className="k">Browser</span><span>Open in Safari or Chrome (not inside Instagram/Gmail). Wait for "Ready offline" once.</span>
+        <span className="k">iPhone</span><span>Share → Add to Home Screen, then open it once from the icon with signal.</span>
+        <span className="k">Maps</span><span>Google Maps → Offline maps → download Mt Hood → Portland → Seaside.</span>
+        <span className="k">No bars</span><span>Log handoffs on the captain's phone only; everyone else just looks.</span>
       </div>
       <div className="muted small">{isStandalone() ? 'Running from the home-screen icon.' : isIOS() ? 'Running in the browser tab (iPhone).' : 'Running in the browser tab.'}</div>
 
@@ -115,16 +114,16 @@ export function Info({ snap, section }: { snap: Snapshot; section?: string }) {
       </label>
 
       <h2 className="sub">Race essentials</h2>
-      <div className="pre">
-        {`NIGHT GEAR (6 PM–7 AM): headlamp or flashlight, one front + one back LED flasher, reflective vest. Vest required until 9 AM. Violations = DQ.
-START (Timberline, 3:35 AM): team check-in opens ~1 hr before your start; gear check at check-in; Leg 1 has NO van support — drive straight to Exch 1.
-ONE VAN on the course at all times. Never drive behind your runner at night. Display the van sign.
-QUIET ZONES (early morning / night, rural + neighborhoods): engine and headlights off, no music, no cheering, no horns.
-MAJOR EXCHANGES 6 · 12 · 18 · 24 · 30: big lots, bathrooms, food, long walk from parking to the chute — leave 15 min earlier. Sleeping only in designated fields at 18/24/30 (a one-van team keeps moving; use them for bathrooms and food).
-LEGS 19–32: cell coverage unreliable. Legs 20–21 gravel/dust — bandana. Leg 28 passes the Elk Preserve: no stopping.
-LEGS 31–36: traffic into Seaside backs up Saturday morning — extra buffer applied; consider dropping the next runner at the exchange early. Leg 36: vans don't follow the course — go to Seaside shuttle parking; the Leg 36 runner must wear the bib with the timing chip. Team meets and runs in together.
-COURSE CLOSES 9 PM Saturday. If a marshal tells you to leapfrog (start the next runner before the current one arrives), do it — it's normal for teams running late.
-EMERGENCY: 911 first, then race HQ (number on your team packet / handbook).`}
+      <div className="kv">
+        <span className="k">Night 6 PM–7 AM</span><span>Vest + headlamp + 2 flashers. Vest until 9 AM.</span>
+        <span className="k">Start</span><span>Timberline check-in 1 hr before · gear check · Leg 1: no van support, drive to Exch 1.</span>
+        <span className="k">Van</span><span>One van on course · never trail your runner at night · sign in the window.</span>
+        <span className="k">Quiet zones</span><span>Engine & lights off · no music, horns or cheering.</span>
+        <span className="k">Majors 6·12·18·24·30</span><span>Bathrooms, food, long walk to the chute — leave 15 min early.</span>
+        <span className="k">Legs 19–32</span><span>No cell service · 20–21 gravel (bandana) · 28: no stopping at the Elk Preserve.</span>
+        <span className="k">Seaside 31–36</span><span>Traffic — drop the next runner early · Leg 36 runner wears the chip bib · van → shuttle parking · run in together.</span>
+        <span className="k">Course closes</span><span>9 PM Sat. If a marshal says leapfrog, do it.</span>
+        <span className="k">Emergency</span><span>911, then race HQ.</span>
       </div>
 
       <h2 className="sub">Roster</h2>

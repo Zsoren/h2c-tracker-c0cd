@@ -105,7 +105,7 @@ export function DropSheet({ snap, runnerId, onClose }: { snap: Snapshot; runnerI
   return (
     <Sheet open onClose={onClose}>
       <h2 style={{ fontSize: 26 }}>Drop {runnerShort(runnerId)}</h2>
-      <div className="names">{remaining.length ? `Reassign remaining leg${remaining.length === 1 ? '' : 's'} ${remaining.join(', ')}` : 'No remaining legs'}</div>
+      <div className="names">{remaining.length ? `Their remaining leg${remaining.length === 1 ? '' : 's'} (${remaining.join(', ')}) go to other runners — pick who takes each one. Nobody else's legs move.` : 'No remaining legs'}</div>
       {remaining.map(n => (
         <div key={n}>
           <div className="sec">Leg {n} → {runnerShort(picks[n])}</div>

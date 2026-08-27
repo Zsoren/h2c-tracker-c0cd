@@ -24,6 +24,10 @@ export default function App() {
   // Landing page: Home before the race, NOW once it has started.
   const route = routeRaw.tab === 'default' ? ({ tab: snap.proj.phase === 'pre' ? 'home' : 'now' } as const) : routeRaw
 
+  // Every screen change starts at the top (Schedule scrolls itself to the current leg).
+  const routeKey = JSON.stringify(route)
+  useEffect(() => { if (route.tab !== 'schedule') window.scrollTo({ top: 0, left: 0 }) }, [routeKey, route.tab])
+
   // Ingest a pasted/shared "#s=" link once, then land on NOW.
   useEffect(() => {
     if (location.hash.startsWith('#s=')) {
