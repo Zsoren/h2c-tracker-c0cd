@@ -27,7 +27,13 @@ Three independent reviewers looked at the live app and screenshots at three phon
 14. **Pre-race "Tonight" card on Home.** [UX] "Wait for ✓ Ready offline · Add to Home Screen · set your pace · download offline maps (Info)."
 15. **Visual consistency.** [UI] Dim the LEG and CAPTAIN pills (amber reserved for LATE, warnings, ADJUST-only-when-needed, the button); runner line never wraps; bold the LEAVE and Finish times; rows ≥ 44 px on phones taller than 600 px; tab-bar stopwatch icon renders as a color emoji on iPhone → text glyph; badge backgrounds lifted so NO SHADE / MAJOR EXCH don't vanish in sun; leg-page gear badge no longer stretches full width.
 
-## P2 — after the race (not tonight)
+## P2 — decided Thu Aug 27 (owner: "if it should be done, do it now; otherwise hold")
+
+**Done now:** Ready-offline chip moved to the bottom; first-run backdrop tap no longer counts as Skip; "Who just finished?" chips in leg order; leg-page re-log "now" chip uses the real now; expected-time effect line hidden until something changes; arrow-only lines dropped from official directions; done legs mute their times.
+
+**Held (no value for a one-day race, or too risky the night before):** "On our way" tap + learned drive times; your legs on pre-race NOW (Home covers it); font-scale consolidation; lighter cards; roster phone numbers (needs the numbers).
+
+Original list for reference:
 
 - One "On our way" tap on the LEAVE row so LATE stops being guesswork; later, learn real drive times from taps. [RR]
 - Pre-race NOW shows your four legs instead of empty space. [RR]

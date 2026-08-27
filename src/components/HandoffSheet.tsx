@@ -95,10 +95,10 @@ export function HandoffSheet({ open, snap, frozenAt, presetLeg, onClose, onLogge
           )}
           <div className="sec">Who just finished?</div>
           <div className="chips">
-            {TEAM.runners.filter(r => state.runnerStatus[r.id] === 'active').map(r => {
-              const L = currentLegOf(state, proj.maxLogged, r.id)
-              return <button key={r.id} className={'chip name' + (L != null && L === leg ? ' sel' : '')} disabled={L == null} onClick={() => L != null && setLeg(L)}>{r.short}{L != null ? ` · ${L}` : ''}</button>
-            })}
+            {TEAM.runners.filter(r => state.runnerStatus[r.id] === 'active')
+              .map(r => ({ r, L: currentLegOf(state, proj.maxLogged, r.id) }))
+              .sort((a, b) => (a.L ?? 99) - (b.L ?? 99))
+              .map(({ r, L }) => <button key={r.id} className={'chip name' + (L != null && L === leg ? ' sel' : '')} disabled={L == null} onClick={() => L != null && setLeg(L)}>{r.short}{L != null ? ` · ${L}` : ''}</button>)}
           </div>
         </>
       )}
@@ -130,7 +130,7 @@ export function HandoffSheet({ open, snap, frozenAt, presetLeg, onClose, onLogge
       <div className="sec">Time {isStart && <span className="muted">· planned {fmtClock(state.plannedStart)}</span>}</div>
       <div className="timebox">
         <input type="time" value={hhmm} step={60} onChange={e => setTime(e.target.value)} />
-        <button className="chip sm" onClick={() => { setAt(frozenAt); setHhmm(toHHMM(frozenAt)) }}>now</button>
+        <button className="chip sm" onClick={() => { const t = store.now(); setAt(t); setHhmm(toHHMM(t)) }}>now</button>
       </div>
       <div className="chips">
         {[-1, -5, -10, -15].map(m => <button key={m} className="chip sm" onClick={() => nudge(m)}>{m} min</button>)}

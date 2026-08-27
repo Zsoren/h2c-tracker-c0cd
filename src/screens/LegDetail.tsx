@@ -84,7 +84,7 @@ export function LegDetail({ snap, n }: { snap: Snapshot; n: number }) {
       {leg.vanDirections && leg.vanDirections.length > 0 && <><div className="muted small">{leg.vanDirections.length ? 'Van route (official)' : ''}</div><p className="pre">{leg.vanDirections.join('\n')}</p></>}
 
       {leg.runnerDirections && leg.runnerDirections.length > 0 && (
-        <><h2 className="sub">Runner directions (official)</h2><p className="pre">{leg.runnerDirections.join('\n')}</p></>
+        <><h2 className="sub">Runner directions (official)</h2><p className="pre">{leg.runnerDirections.filter(l => !/^[↑↓←→\s]*$/.test(l)).join('\n')}</p></>
       )}
       {leg.namedAfter && /^[A-Z]/.test(leg.namedAfter) && <div className="muted small">Leg named after {leg.namedAfter}</div>}
 

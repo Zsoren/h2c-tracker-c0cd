@@ -60,11 +60,15 @@ export function ExpectSheet({ open, snap, leg, onClose }: { open: boolean; snap:
       <div className="muted small">Change either one — the other follows ({L.miles} mi).</div>
 
       {etaTooEarly && <div className="warn">That ETA is already in the past.</div>}
-      <div className="effect">
-        Exch {leg} {fmtClock(lp.end)} → <b>{fmtClock(eta)}</b>
-        {leaveBy != null && <> · LEAVE BY {fmtClock(lp.leaveBy as number)} → <b>{fmtClock(leaveBy)}</b></>}
-        <br />finish {fmtClock(proj.finish)} → <b>{fmtClock(newFinish)}</b>
-      </div>
+      {deltaSec !== 0 ? (
+        <div className="effect">
+          Exch {leg} {fmtClock(lp.end)} → <b>{fmtClock(eta)}</b>
+          {leaveBy != null && <> · LEAVE BY {fmtClock(lp.leaveBy as number)} → <b>{fmtClock(leaveBy)}</b></>}
+          <br />finish {fmtClock(proj.finish)} → <b>{fmtClock(newFinish)}</b>
+        </div>
+      ) : (
+        <div className="effect">Exch {leg} {fmtClock(lp.end)} · finish {fmtClock(proj.finish)}</div>
+      )}
 
       <button className="confirm" disabled={etaTooEarly} onClick={save}>SAVE</button>
       {lp.expectEdited && <button className="cancel" onClick={reset}>Reset to runner's pace ({fmtHMS(defaultDur)})</button>}

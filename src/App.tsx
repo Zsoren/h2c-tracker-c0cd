@@ -55,7 +55,7 @@ export default function App() {
   return (
     <div className="app">
       {imported != null && <div className="banner" style={{ position: 'fixed', top: 8, left: 8, right: 8, zIndex: 50 }}><span className="grow">Plan link loaded · {imported} new change{imported === 1 ? '' : 's'}</span><button className="plain" onClick={() => setImported(null)}>OK</button></div>}
-      {readyChip && <div style={{ position: 'fixed', top: 'calc(8px + env(safe-area-inset-top, 0px))', left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}><span className="tag" style={{ fontSize: 14, padding: '6px 12px' }}>✓ Ready offline</span></div>}
+      {readyChip && <div style={{ position: 'fixed', bottom: 'calc(var(--tabbar) + var(--safe-b) + 12px)', left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}><span className="tag" style={{ fontSize: 14, padding: '6px 12px' }}>✓ Ready offline</span></div>}
       {!storageOk && <div className="banner red" style={{ position: 'fixed', top: 8, left: 8, right: 8, zIndex: 49 }}><span className="grow">This browser refused storage — changes will be lost when you close the tab. Open the site in Safari/Chrome (not private mode).</span></div>}
       {showInstall && route.tab !== 'now' && (
         <div className="banner" style={{ margin: '8px 12px 0' }}>
@@ -91,7 +91,7 @@ function FirstRun({ snap }: { snap: ReturnType<typeof useRace> }) {
   const valid = paceSec != null && paceSec >= 240 && paceSec <= 1200
   if (runner === null) {
     return (
-      <Sheet open onClose={() => done(null)}>
+      <Sheet open onClose={() => { /* pick a name or tap Skip — a stray backdrop tap shouldn't silence this forever */ }}>
         <h2 style={{ fontSize: 26 }}>Which runner are you?</h2>
         <div className="names">Gives you a personal "You" line on NOW. You can change it under Info.</div>
         <div className="chips" style={{ flexWrap: 'wrap' }}>
